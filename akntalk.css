@@ -1,0 +1,24 @@
+body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 14pt }
+a { color: inherit; text-decoration: none } a:hover { text-decoration: underline }
+
+h1, h2, h3, h4, h5 { text-align: center }
+h1 { font-size: 48pt }
+h2 { font-size: 36pt }
+h3 { font-size: 24pt }
+h4 { font-size: 18pt }
+
+ul { width: 75%; margin-left: auto; margin-right: auto; font-size: 32pt }
+li { margin-top: 18pt; margin-bottom: 18pt }
+
+section > h2.left, section > h2.right { position: absolute; top: 12pt; width: calc(50% - 24pt); height: 32pt; margin: 0; font-size: 32pt }
+section > div.left, section > div.right { position: absolute; top: 12pt; width: calc(50% - 24pt); height: calc(100% - 24pt); overflow: scroll }
+section > h2.left + div.left, section > h2.right + div.right { top: 56pt; height: calc(100% - 68pt) }
+
+section > h2.left, section > div.left { left: 12pt }
+section > h2.right, section > div.right { right: 12pt }
+
+pre { margin: 0; font-size: 14pt }
+pre span.nt, pre span.k { color: rgb(0,0,204) } /* Tag */
+pre span.na { color: rgb(153,0,102) } /* Attribute Name */
+pre span.s { color: rgb(153,51,0) } /* Attribute Value */
+pre span.cp { color: rgb(51,102,153) } /* Processing Directive */
