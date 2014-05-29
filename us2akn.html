@@ -1,0 +1,1412 @@
+<!doctype html>
+<html>
+
+<head>
+<title>Legislative Data Mapping to Akoma Ntoso</title>
+<link href="akntalk.css" rel="stylesheet" type="text/css">
+</head>
+
+<body style="padding: 24pt">
+
+<pre><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;</span>
+
+<span class="k">&lt;xsl:stylesheet</span> <span class="na">xmlns:xsl=</span><span class="s">&quot;http://www.w3.org/1999/XSL/Transform&quot;</span> <span class="na">version=</span><span class="s">&quot;1.0&quot;</span>
+  <span class="na">xmlns=</span><span class="s">&quot;http://docs.oasis-open.org/legaldocml/ns/akn/3.0/CSD06&quot;</span>
+  <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+  <span class="na">xmlns:date=</span><span class="s">&quot;http://exslt.org/dates-and-times&quot;</span> <span class="na">exclude-result-prefixes=</span><span class="s">&quot;date&quot;</span><span class="nt">&gt;</span>
+
+<span class="k">&lt;xsl:param</span> <span class="na">name=</span><span class="s">&quot;today&quot;</span><span class="nt">&gt;</span>
+  <span class="k">&lt;xsl:choose</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:when</span> <span class="na">test=</span><span class="s">&quot;function-available(&#39;date:date&#39;)&quot;</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;substring(date:date(),1,10)&quot;</span> <span class="nt">/&gt;</span>
+    <span class="k">&lt;/xsl:when&gt;</span>
+    <span class="k">&lt;xsl:otherwise</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;&#39;2013-12-31&#39;&quot;</span> <span class="nt">/&gt;</span>
+    <span class="k">&lt;/xsl:otherwise&gt;</span>
+  <span class="k">&lt;/xsl:choose&gt;</span>
+<span class="k">&lt;/xsl:param&gt;</span>
+
+<span class="k">&lt;xsl:param</span> <span class="na">name=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">select=</span><span class="s">&quot;&#39;&#39;&quot;</span> <span class="nt">/&gt;</span>
+<span class="k">&lt;xsl:param</span> <span class="na">name=</span><span class="s">&quot;style-type&quot;</span> <span class="na">select=</span><span class="s">&quot;&#39;text/css&#39;&quot;</span> <span class="nt">/&gt;</span>
+
+<span class="k">&lt;xsl:output</span> <span class="na">method=</span><span class="s">&quot;xml&quot;</span> <span class="na">version=</span><span class="s">&quot;1.0&quot;</span> <span class="na">encoding=</span><span class="s">&quot;utf-8&quot;</span> <span class="na">omit-xml-declaration=</span><span class="s">&quot;no&quot;</span> <span class="na">indent=</span><span class="s">&quot;yes&quot;</span> <span class="nt">/&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;/&quot;</span><span class="nt">&gt;</span>
+  <span class="k">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;$stylesheet&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:processing-instruction</span> <span class="na">name=</span><span class="s">&quot;xml-stylesheet&quot;</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>href=&quot;<span class="k">&lt;/xsl:text&gt;</span>
+      <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;$stylesheet&quot;</span> <span class="nt">/&gt;</span>
+      <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>&quot; type=&quot;<span class="k">&lt;/xsl:text&gt;</span>
+      <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;$style-type&quot;</span> <span class="nt">/&gt;</span>
+      <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>&quot;<span class="k">&lt;/xsl:text&gt;</span>
+    <span class="k">&lt;/xsl:processing-instruction&gt;</span>
+  <span class="k">&lt;/xsl:if&gt;</span>
+  <span class="nt">&lt;akomaNtoso</span> <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://docs.oasis-open.org/legaldocml/ns/akn/3.0/CSD06 http://akomantoso.googlecode.com/svn/release/trunk/schema/akomantoso30.xsd&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:apply-templates</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/akomaNtoso&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+
+<span class="c">&lt;!-- keys --&gt;</span>
+
+<span class="k">&lt;xsl:key</span> <span class="na">name=</span><span class="s">&quot;id&quot;</span> <span class="na">match=</span><span class="s">&quot;*&quot;</span> <span class="na">use=</span><span class="s">&quot;@id&quot;</span> <span class="nt">/&gt;</span>
+<span class="k">&lt;xsl:key</span> <span class="na">name=</span><span class="s">&quot;committee-name&quot;</span> <span class="na">match=</span><span class="s">&quot;committee-name&quot;</span> <span class="na">use=</span><span class="s">&quot;@committee-id&quot;</span> <span class="nt">/&gt;</span>
+<span class="k">&lt;xsl:key</span> <span class="na">name=</span><span class="s">&quot;sponsor&quot;</span> <span class="na">match=</span><span class="s">&quot;*[self::sponsor|self::cosponsor]&quot;</span> <span class="na">use=</span><span class="s">&quot;@name-id&quot;</span> <span class="nt">/&gt;</span>
+<span class="k">&lt;xsl:key</span> <span class="na">name=</span><span class="s">&quot;term&quot;</span> <span class="na">match=</span><span class="s">&quot;term&quot;</span> <span class="na">use=</span><span class="s">&quot;.&quot;</span> <span class="nt">/&gt;</span>
+<span class="k">&lt;xsl:key</span> <span class="na">name=</span><span class="s">&quot;external-xref&quot;</span> <span class="na">match=</span><span class="s">&quot;external-xref&quot;</span> <span class="na">use=</span><span class="s">&quot;@parsable-cite&quot;</span> <span class="nt">/&gt;</span>
+
+
+<span class="c">&lt;!-- helper templates --&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">name=</span><span class="s">&quot;hyphenate-date&quot;</span><span class="nt">&gt;</span>
+  <span class="k">&lt;xsl:param</span> <span class="na">name=</span><span class="s">&quot;compact&quot;</span> <span class="na">select=</span><span class="s">&quot;@date&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;substring($compact,1,4)&quot;</span><span class="nt">/&gt;</span>
+  <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>-<span class="k">&lt;/xsl:text&gt;</span>
+  <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;substring($compact,5,2)&quot;</span><span class="nt">/&gt;</span>
+  <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>-<span class="k">&lt;/xsl:text&gt;</span>
+  <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;substring($compact,7,2)&quot;</span><span class="nt">/&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">name=</span><span class="s">&quot;parse-cite&quot;</span><span class="nt">&gt;</span>
+  <span class="k">&lt;xsl:param</span> <span class="na">name=</span><span class="s">&quot;cite&quot;</span> <span class="na">select=</span><span class="s">&quot;@parsable-cite&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;substring-before($cite,&#39;/&#39;) = &#39;usc&#39;&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>http://uscode.house.gov/quicksearch/get.plx?title=<span class="k">&lt;/xsl:text&gt;</span>
+    <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;substring-before(substring-after($cite,&#39;/&#39;),&#39;/&#39;)&quot;</span><span class="nt">/&gt;</span>
+    <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span><span class="ni">&amp;amp;</span>section=<span class="k">&lt;/xsl:text&gt;</span>
+    <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;substring-after(substring-after($cite,&#39;/&#39;),&#39;/&#39;)&quot;</span><span class="nt">/&gt;</span>
+  <span class="k">&lt;/xsl:if&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">name=</span><span class="s">&quot;TitleCaseWord&quot;</span><span class="nt">&gt;</span>
+  <span class="k">&lt;xsl:param</span> <span class="na">name=</span><span class="s">&quot;text&quot;</span><span class="nt">/&gt;</span>
+  <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;translate(substring($text,1,1),&#39;abcdefghijklmnopqrstuvwxyz&#39;,&#39;ABCDEFGHIJKLMNOPQRSTUVWXYZ&#39;)&quot;</span> <span class="nt">/&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;translate(substring($text,2,string-length($text)-1),&#39;ABCDEFGHIJKLMNOPQRSTUVWXYZ&#39;,&#39;abcdefghijklmnopqrstuvwxyz&#39;)&quot;</span> <span class="nt">/&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">name=</span><span class="s">&quot;TitleCase&quot;</span><span class="nt">&gt;</span>
+  <span class="k">&lt;xsl:param</span> <span class="na">name=</span><span class="s">&quot;text&quot;</span><span class="nt">/&gt;</span>
+  <span class="k">&lt;xsl:choose</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:when</span> <span class="na">test=</span><span class="s">&quot;contains($text,&#39; &#39;)&quot;</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;TitleCaseWord&quot;</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;text&quot;</span> <span class="na">select=</span><span class="s">&quot;substring-before($text,&#39; &#39;)&quot;</span><span class="nt">/&gt;</span>
+      <span class="k">&lt;/xsl:call-template&gt;</span>
+      <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span> <span class="k">&lt;/xsl:text&gt;</span>
+      <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;TitleCase&quot;</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;text&quot;</span> <span class="na">select=</span><span class="s">&quot;substring-after($text,&#39; &#39;)&quot;</span><span class="nt">/&gt;</span>
+      <span class="k">&lt;/xsl:call-template&gt;</span>
+    <span class="k">&lt;/xsl:when&gt;</span>
+    <span class="k">&lt;xsl:otherwise</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;TitleCaseWord&quot;</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;text&quot;</span> <span class="na">select=</span><span class="s">&quot;$text&quot;</span><span class="nt">/&gt;</span>
+      <span class="k">&lt;/xsl:call-template&gt;</span>
+    <span class="k">&lt;/xsl:otherwise&gt;</span>
+  <span class="k">&lt;/xsl:choose&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">name=</span><span class="s">&quot;id&quot;</span><span class="nt">&gt;</span>
+<span class="k">&lt;xsl:param</span> <span class="na">name=</span><span class="s">&quot;node&quot;</span> <span class="na">select=</span><span class="s">&quot;.&quot;</span><span class="nt">/&gt;</span>
+<span class="k">&lt;xsl:choose</span><span class="nt">&gt;</span>
+  <span class="k">&lt;xsl:when</span> <span class="na">test=</span><span class="s">&quot;$node/ancestor::quoted-block | $node/ancestor::amendment-block&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:choose</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:when</span> <span class="na">test=</span><span class="s">&quot;$node/@id&quot;</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;$node/@id&quot;</span> <span class="nt">/&gt;</span>
+      <span class="k">&lt;/xsl:when&gt;</span>
+      <span class="k">&lt;xsl:otherwise</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;generate-id($node)&quot;</span> <span class="nt">/&gt;</span>
+      <span class="k">&lt;/xsl:otherwise&gt;</span>
+    <span class="k">&lt;/xsl:choose&gt;</span>
+  <span class="k">&lt;/xsl:when&gt;</span>
+  <span class="k">&lt;xsl:when</span> <span class="na">test=</span><span class="s">&quot;$node/self::title&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>title<span class="k">&lt;/xsl:text&gt;</span>
+    <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;translate($node/enum, &#39;. ()&#39;, &#39;&#39;)&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;/xsl:when&gt;</span>
+  <span class="k">&lt;xsl:when</span> <span class="na">test=</span><span class="s">&quot;$node/self::subtitle&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;id&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;node&quot;</span> <span class="na">select=</span><span class="s">&quot;$node/..&quot;</span> <span class="nt">/&gt;</span><span class="k">&lt;/xsl:call-template&gt;</span>
+    <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>.<span class="k">&lt;/xsl:text&gt;</span>
+    <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;translate($node/enum, &#39;. ()&#39;, &#39;&#39;)&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;/xsl:when&gt;</span>
+  <span class="k">&lt;xsl:when</span> <span class="na">test=</span><span class="s">&quot;$node/self::chapter&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;id&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;node&quot;</span> <span class="na">select=</span><span class="s">&quot;$node/..&quot;</span> <span class="nt">/&gt;</span><span class="k">&lt;/xsl:call-template&gt;</span>
+    <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>-ch<span class="k">&lt;/xsl:text&gt;</span>
+    <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;translate($node/enum, &#39;. ()&#39;, &#39;&#39;)&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;/xsl:when&gt;</span>
+  <span class="k">&lt;xsl:when</span> <span class="na">test=</span><span class="s">&quot;$node/self::part&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;id&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;node&quot;</span> <span class="na">select=</span><span class="s">&quot;$node/..&quot;</span> <span class="nt">/&gt;</span><span class="k">&lt;/xsl:call-template&gt;</span>
+    <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>-part<span class="k">&lt;/xsl:text&gt;</span>
+    <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;translate($node/enum, &#39;. ()&#39;, &#39;&#39;)&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;/xsl:when&gt;</span>
+  <span class="k">&lt;xsl:when</span> <span class="na">test=</span><span class="s">&quot;$node/self::section&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:choose</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:when</span> <span class="na">test=</span><span class="s">&quot;$node/@section-type = &#39;undesignated-section&#39;&quot;</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;$node/@id&quot;</span> <span class="nt">/&gt;</span>
+      <span class="k">&lt;/xsl:when&gt;</span>
+      <span class="k">&lt;xsl:when</span> <span class="na">test=</span><span class="s">&quot;$node/parent::legis-body/@changed = &#39;deleted&#39;&quot;</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;$node/@id&quot;</span> <span class="nt">/&gt;</span>
+      <span class="k">&lt;/xsl:when&gt;</span>
+      <span class="k">&lt;xsl:otherwise</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>sec<span class="k">&lt;/xsl:text&gt;</span>
+        <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;translate($node/enum, &#39;. ()&#39;, &#39;&#39;)&quot;</span> <span class="nt">/&gt;</span>
+      <span class="k">&lt;/xsl:otherwise&gt;</span>
+    <span class="k">&lt;/xsl:choose&gt;</span>
+  <span class="k">&lt;/xsl:when&gt;</span>
+  <span class="k">&lt;xsl:when</span> <span class="na">test=</span><span class="s">&quot;$node/self::subsection&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;id&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;node&quot;</span> <span class="na">select=</span><span class="s">&quot;$node/..&quot;</span> <span class="nt">/&gt;</span><span class="k">&lt;/xsl:call-template&gt;</span>
+    <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>.<span class="k">&lt;/xsl:text&gt;</span>
+    <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;translate($node/enum, &#39;. ()&#39;, &#39;&#39;)&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;/xsl:when&gt;</span>
+  <span class="k">&lt;xsl:when</span> <span class="na">test=</span><span class="s">&quot;$node/self::paragraph&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;id&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;node&quot;</span> <span class="na">select=</span><span class="s">&quot;$node/..&quot;</span> <span class="nt">/&gt;</span><span class="k">&lt;/xsl:call-template&gt;</span>
+    <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>.<span class="k">&lt;/xsl:text&gt;</span>
+    <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;translate($node/enum, &#39;. ()&#39;, &#39;&#39;)&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;/xsl:when&gt;</span>
+  <span class="k">&lt;xsl:when</span> <span class="na">test=</span><span class="s">&quot;$node/self::subparagraph | $node/self::clause | $node/self::subclause | $node/self::point&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;id&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;node&quot;</span> <span class="na">select=</span><span class="s">&quot;$node/..&quot;</span> <span class="nt">/&gt;</span><span class="k">&lt;/xsl:call-template&gt;</span>
+    <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>.<span class="k">&lt;/xsl:text&gt;</span>
+    <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;translate($node/enum, &#39;. ()&#39;, &#39;&#39;)&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;/xsl:when&gt;</span>
+  <span class="k">&lt;xsl:when</span> <span class="na">test=</span><span class="s">&quot;$node/@id&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;$node/@id&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;/xsl:when&gt;</span>
+  <span class="k">&lt;xsl:otherwise</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;generate-id($node)&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;/xsl:otherwise&gt;</span>
+<span class="k">&lt;/xsl:choose&gt;</span>
+<span class="k">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;string($node/enum) and string($node/preceding-sibling::*[1]/enum) = string($node/enum)&quot;</span><span class="nt">&gt;</span><span class="c">&lt;!-- duplicates --&gt;</span>
+  <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>-bis<span class="k">&lt;/xsl:text&gt;</span>
+<span class="k">&lt;/xsl:if&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+
+<span class="c">&lt;!-- basic elements --&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;text()&quot;</span><span class="nt">&gt;</span>
+  <span class="k">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;substring(.,1,1) = &#39; &#39;&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span> <span class="k">&lt;/xsl:text&gt;</span>
+  <span class="k">&lt;/xsl:if&gt;</span>
+  <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;normalize-space()&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;substring(.,string-length(.)) = &#39; &#39;&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span> <span class="k">&lt;/xsl:text&gt;</span>
+  <span class="k">&lt;/xsl:if&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;linebreak&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;eol</span> <span class="nt">/&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;pagebreak&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;eop</span> <span class="nt">/&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;italic&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;i&gt;</span>
+    <span class="k">&lt;xsl:apply-templates</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/i&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;bold&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;b&gt;</span>
+    <span class="k">&lt;xsl:apply-templates</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/b&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;quote&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;extractText&gt;</span>
+    <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;startQuote&quot;</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:choose</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:when</span> <span class="na">test=</span><span class="s">&quot;ancestor::quoted-block&quot;</span><span class="nt">&gt;</span>
+          <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span><span class="ni">&amp;#8216;</span><span class="k">&lt;/xsl:text&gt;</span>
+        <span class="k">&lt;/xsl:when&gt;</span>
+        <span class="k">&lt;xsl:otherwise</span><span class="nt">&gt;</span>
+          <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span><span class="ni">&amp;#8220;</span><span class="k">&lt;/xsl:text&gt;</span>
+        <span class="k">&lt;/xsl:otherwise&gt;</span>
+      <span class="k">&lt;/xsl:choose&gt;</span>
+    <span class="k">&lt;/xsl:attribute&gt;</span>
+    <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;endQuote&quot;</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:choose</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:when</span> <span class="na">test=</span><span class="s">&quot;ancestor::quoted-block&quot;</span><span class="nt">&gt;</span>
+          <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span><span class="ni">&amp;#8217;</span><span class="k">&lt;/xsl:text&gt;</span>
+        <span class="k">&lt;/xsl:when&gt;</span>
+        <span class="k">&lt;xsl:otherwise</span><span class="nt">&gt;</span>
+          <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span><span class="ni">&amp;#8221;</span><span class="k">&lt;/xsl:text&gt;</span>
+        <span class="k">&lt;/xsl:otherwise&gt;</span>
+      <span class="k">&lt;/xsl:choose&gt;</span>
+    <span class="k">&lt;/xsl:attribute&gt;</span>
+    <span class="k">&lt;xsl:apply-templates</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/extractText&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;term&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;term</span> <span class="na">currentId=</span><span class="s">&quot;{generate-id()}&quot;</span> <span class="na">refersTo=</span><span class="s">&quot;#{translate(normalize-space(),&#39;ABCDEFGHIJKLMNOPQRSTUVWXYZ &#39;,&#39;abcdefghijklmnopqrstuvwxyz&#39;)}&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:choose</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:when</span> <span class="na">test=</span><span class="s">&quot;ancestor::quoted-block&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:text</span><span class="nt">&gt;</span><span class="ni">&amp;#8216;</span><span class="k">&lt;/xsl:text&gt;&lt;/xsl:when&gt;</span>
+      <span class="k">&lt;xsl:otherwise</span><span class="nt">&gt;</span><span class="k">&lt;xsl:text</span><span class="nt">&gt;</span><span class="ni">&amp;#8220;</span><span class="k">&lt;/xsl:text&gt;&lt;/xsl:otherwise&gt;</span>
+    <span class="k">&lt;/xsl:choose&gt;</span>
+    <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;normalize-space()&quot;</span> <span class="nt">/&gt;</span>
+    <span class="k">&lt;xsl:choose</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:when</span> <span class="na">test=</span><span class="s">&quot;ancestor::quoted-block&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:text</span><span class="nt">&gt;</span><span class="ni">&amp;#8217;</span><span class="k">&lt;/xsl:text&gt;&lt;/xsl:when&gt;</span>
+      <span class="k">&lt;xsl:otherwise</span><span class="nt">&gt;/span><span class="k">&lt;xsl:text</span><span class="nt">&gt;</span><span class="ni">&amp;#8221;</span><span class="k">&lt;/xsl:text&gt;&lt;/xsl:otherwise&gt;</span>
+    <span class="k">&lt;/xsl:choose&gt;</span>
+  <span class="nt">&lt;/term&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;internal-xref&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;ref</span> <span class="na">class=</span><span class="s">&quot;internal&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;href&quot;</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>#<span class="k">&lt;/xsl:text&gt;</span>
+      <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;id&quot;</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;node&quot;</span> <span class="na">select=</span><span class="s">&quot;key(&#39;id&#39;, @idref)&quot;</span> <span class="nt">/&gt;</span>
+      <span class="k">&lt;/xsl:call-template&gt;</span>
+    <span class="k">&lt;/xsl:attribute&gt;</span>
+    <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;currentId&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;generate-id()&quot;</span> <span class="nt">/&gt;</span><span class="k">&lt;/xsl:attribute&gt;</span>
+    <span class="k">&lt;xsl:apply-templates</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/ref&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;external-xref&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;a&gt;</span>
+    <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;href&quot;</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;parse-cite&quot;</span> <span class="nt">/&gt;</span>
+    <span class="k">&lt;/xsl:attribute&gt;</span>
+    <span class="k">&lt;xsl:apply-templates</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/a&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;sponsor&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;docIntroducer</span> <span class="na">refersTo=</span><span class="s">&quot;#{@name-id}&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;normalize-space()&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/docIntroducer&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;cosponsor&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;docProponent</span> <span class="na">refersTo=</span><span class="s">&quot;#{@name-id}&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;normalize-space()&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/docProponent&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;committee-name&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;docCommittee</span> <span class="na">refersTo=</span><span class="s">&quot;#{@committee-id}&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;normalize-space()&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/docCommittee&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;proviso&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;inline</span> <span class="na">name=</span><span class="s">&quot;proviso&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:apply-templates</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/inline&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;short-title&quot;</span><span class="nt">&gt;</span>
+  <span class="k">&lt;xsl:apply-templates</span> <span class="nt">/&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;enum-in-header&quot;</span><span class="nt">&gt;</span>
+  <span class="k">&lt;xsl:apply-templates</span> <span class="nt">/&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;header-in-text&quot;</span><span class="nt">&gt;</span>
+  <span class="k">&lt;xsl:apply-templates</span> <span class="nt">/&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;xm-replace_text&quot;</span><span class="nt">&gt;</span>
+  <span class="k">&lt;xsl:apply-templates</span> <span class="nt">/&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;text&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;p&gt;</span>
+    <span class="k">&lt;xsl:apply-templates</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/p&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;quoted-block&quot;</span><span class="nt">&gt;</span>
+  <span class="k">&lt;xsl:variable</span> <span class="na">name=</span><span class="s">&quot;id&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:choose</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:when</span> <span class="na">test=</span><span class="s">&quot;@id&quot;</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;@id&quot;</span> <span class="nt">/&gt;</span>
+      <span class="k">&lt;/xsl:when&gt;</span>
+      <span class="k">&lt;xsl:otherwise</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;generate-id()&quot;</span> <span class="nt">/&gt;</span>
+      <span class="k">&lt;/xsl:otherwise&gt;</span>
+    <span class="k">&lt;/xsl:choose&gt;</span>
+  <span class="k">&lt;/xsl:variable&gt;</span>
+  <span class="nt">&lt;p&gt;</span>
+    <span class="nt">&lt;mod</span> <span class="na">currentId=</span><span class="s">&quot;{$id}-mod&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;quotedStructure</span> <span class="na">currentId=</span><span class="s">&quot;{$id}&quot;</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;startQuote&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:text</span><span class="nt">&gt;</span><span class="ni">&amp;#8220;</span><span class="k">&lt;/xsl:text&gt;&lt;/xsl:attribute&gt;</span>
+        <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;endQuote&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:text</span><span class="nt">&gt;</span><span class="ni">&amp;#8221;</span><span class="k">&lt;/xsl:text&gt;&lt;/xsl:attribute&gt;</span>
+        <span class="k">&lt;xsl:apply-templates</span> <span class="na">select=</span><span class="s">&quot;text|chapter|section|subsection|paragraph|subparagraph|clause|subclause|toc&quot;</span> <span class="nt">/&gt;</span>
+        <span class="k">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;quoted-block-continuation-text&quot;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;block</span> <span class="na">name=</span><span class="s">&quot;continuation&quot;</span> <span class="na">class=</span><span class="s">&quot;{quoted-block-continuation-text/@quoted-block-continuation-text-level}&quot;</span><span class="nt">&gt;</span>
+            <span class="k">&lt;xsl:apply-templates</span> <span class="na">select=</span><span class="s">&quot;quoted-block-continuation-text/node()&quot;</span> <span class="nt">/&gt;</span>
+          <span class="nt">&lt;/block&gt;</span>
+        <span class="k">&lt;/xsl:if&gt;</span>
+      <span class="nt">&lt;/quotedStructure&gt;</span>
+    <span class="nt">&lt;/mod&gt;</span>
+    <span class="k">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;after-quoted-block&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;after&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;after-quoted-block&quot;</span> <span class="nt">/&gt;&lt;/span&gt;</span>
+    <span class="k">&lt;/xsl:if&gt;</span>
+  <span class="nt">&lt;/p&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+
+<span class="c">&lt;!-- core hierarchies --&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">name=</span><span class="s">&quot;hierarchy&quot;</span><span class="nt">&gt;</span>
+
+  <span class="k">&lt;xsl:param</span> <span class="na">name=</span><span class="s">&quot;ename&quot;</span> <span class="na">select=</span><span class="s">&quot;name()&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;xsl:param</span> <span class="na">name=</span><span class="s">&quot;name-attr&quot;</span> <span class="na">select=</span><span class="s">&quot;&#39;&#39;&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;xsl:param</span> <span class="na">name=</span><span class="s">&quot;class&quot;</span> <span class="na">select=</span><span class="s">&quot;&#39;&#39;&quot;</span> <span class="nt">/&gt;</span>  
+  <span class="k">&lt;xsl:param</span> <span class="na">name=</span><span class="s">&quot;period&quot;</span> <span class="na">select=</span><span class="s">&quot;&#39;&#39;&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;xsl:param</span> <span class="na">name=</span><span class="s">&quot;originalId&quot;</span> <span class="na">select=</span><span class="s">&quot;&#39;&#39;&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;xsl:param</span> <span class="na">name=</span><span class="s">&quot;alternativeTo&quot;</span> <span class="na">select=</span><span class="s">&quot;&#39;&#39;&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;xsl:param</span> <span class="na">name=</span><span class="s">&quot;style&quot;</span> <span class="na">select=</span><span class="s">&quot;&#39;&#39;&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;xsl:param</span> <span class="na">name=</span><span class="s">&quot;title&quot;</span> <span class="na">select=</span><span class="s">&quot;&#39;&#39;&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;xsl:param</span> <span class="na">name=</span><span class="s">&quot;num-prefix&quot;</span> <span class="na">select=</span><span class="s">&quot;&#39;&#39;&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;xsl:param</span> <span class="na">name=</span><span class="s">&quot;suppress-heading&quot;</span> <span class="na">select=</span><span class="s">&quot;false()&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;xsl:param</span> <span class="na">name=</span><span class="s">&quot;subelements&quot;</span> <span class="nt">/&gt;</span>
+
+  <span class="k">&lt;xsl:element</span> <span class="na">name=</span><span class="s">&quot;{$ename}&quot;</span><span class="nt">&gt;</span>
+
+    <span class="k">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;$name-attr&quot;</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;name&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;$name-attr&quot;</span> <span class="nt">/&gt;</span><span class="k">&lt;/xsl:attribute&gt;</span>
+    <span class="k">&lt;/xsl:if&gt;</span>
+
+    <span class="k">&lt;xsl:variable</span> <span class="na">name=</span><span class="s">&quot;id&quot;</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;id&quot;</span> <span class="nt">/&gt;</span>
+    <span class="k">&lt;/xsl:variable&gt;</span>
+    <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;currentId&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;$id&quot;</span> <span class="nt">/&gt;</span><span class="k">&lt;/xsl:attribute&gt;</span>
+
+    <span class="k">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;$class&quot;</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;class&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;$class&quot;</span> <span class="nt">/&gt;</span><span class="k">&lt;/xsl:attribute&gt;</span>
+    <span class="k">&lt;/xsl:if&gt;</span>
+
+    <span class="k">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;$period&quot;</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;period&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;$period&quot;</span> <span class="nt">/&gt;</span><span class="k">&lt;/xsl:attribute&gt;</span>
+    <span class="k">&lt;/xsl:if&gt;</span>
+
+    <span class="k">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;$originalId&quot;</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;originalId&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;$originalId&quot;</span> <span class="nt">/&gt;</span><span class="k">&lt;/xsl:attribute&gt;</span>
+    <span class="k">&lt;/xsl:if&gt;</span>
+
+    <span class="k">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;$alternativeTo&quot;</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;alternativeTo&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;$alternativeTo&quot;</span> <span class="nt">/&gt;</span><span class="k">&lt;/xsl:attribute&gt;</span>
+    <span class="k">&lt;/xsl:if&gt;</span>
+
+    <span class="k">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;$style&quot;</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;style&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;$style&quot;</span> <span class="nt">/&gt;</span><span class="k">&lt;/xsl:attribute&gt;</span>
+    <span class="k">&lt;/xsl:if&gt;</span>
+
+    <span class="k">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;$title&quot;</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;title&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;$title&quot;</span> <span class="nt">/&gt;</span><span class="k">&lt;/xsl:attribute&gt;</span>
+    <span class="k">&lt;/xsl:if&gt;</span>
+  
+    <span class="k">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;enum&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;num&gt;</span>
+        <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;$num-prefix&quot;</span> <span class="nt">/&gt;</span>
+        <span class="k">&lt;xsl:apply-templates</span> <span class="na">select=</span><span class="s">&quot;enum/node()&quot;</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;/num&gt;</span>
+    <span class="k">&lt;/xsl:if&gt;</span>
+    
+    <span class="k">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;header and not($suppress-heading)&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;heading</span> <span class="na">currentId=</span><span class="s">&quot;{concat($id,&#39;-heading&#39;)}&quot;</span><span class="nt">&gt;</span>
+          <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;normalize-space(header)&quot;</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;/heading&gt;</span>
+    <span class="k">&lt;/xsl:if&gt;</span>
+
+    <span class="k">&lt;xsl:choose</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:when</span> <span class="na">test=</span><span class="s">&quot;$subelements&quot;</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;text|toc|table&quot;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;intro</span> <span class="na">currentId=</span><span class="s">&quot;{$id}-intro&quot;</span><span class="nt">&gt;</span>
+            <span class="k">&lt;xsl:apply-templates</span> <span class="na">select=</span><span class="s">&quot;text|quoted-block|toc|table&quot;</span> <span class="nt">/&gt;</span>
+          <span class="nt">&lt;/intro&gt;</span>
+        <span class="k">&lt;/xsl:if&gt;</span>
+        <span class="k">&lt;xsl:apply-templates</span> <span class="na">select=</span><span class="s">&quot;$subelements&quot;</span> <span class="nt">/&gt;</span>
+        <span class="k">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;name(*[last()]) = &#39;continuation-text&#39;&quot;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;wrap</span> <span class="na">currentId=</span><span class="s">&quot;{$id}-wrap&quot;</span> <span class="na">class=</span><span class="s">&quot;{*[last()]/@continuation-text-level}&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;p&gt;</span>
+              <span class="k">&lt;xsl:apply-templates</span> <span class="na">select=</span><span class="s">&quot;*[last()]/node()&quot;</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;/p&gt;</span>
+          <span class="nt">&lt;/wrap&gt;</span>
+        <span class="k">&lt;/xsl:if&gt;</span>
+      <span class="k">&lt;/xsl:when&gt;</span>
+      <span class="k">&lt;xsl:otherwise</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;content</span> <span class="na">currentId=</span><span class="s">&quot;{$id}-content&quot;</span><span class="nt">&gt;</span>
+          <span class="k">&lt;xsl:apply-templates</span> <span class="na">select=</span><span class="s">&quot;text|quoted-block|toc|table|list&quot;</span> <span class="nt">/&gt;</span>
+          <span class="k">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;name(*[last()]) = &#39;continuation-text&#39;&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;p&gt;</span>
+              <span class="k">&lt;xsl:apply-templates</span> <span class="na">select=</span><span class="s">&quot;*[last()]/node()&quot;</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;/p&gt;</span>
+          <span class="k">&lt;/xsl:if&gt;</span>
+        <span class="nt">&lt;/content&gt;</span>
+      <span class="k">&lt;/xsl:otherwise&gt;</span>
+    <span class="k">&lt;/xsl:choose&gt;</span>
+  <span class="k">&lt;/xsl:element&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;division&quot;</span><span class="nt">&gt;</span>
+  <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;hierarchy&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;num-prefix&quot;</span> <span class="na">select=</span><span class="s">&quot;&#39;Division &#39;&quot;</span> <span class="nt">/&gt;</span>
+    <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;subelements&quot;</span> <span class="na">select=</span><span class="s">&quot;title|section&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;/xsl:call-template&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;title&quot;</span><span class="nt">&gt;</span>
+  <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;hierarchy&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;num-prefix&quot;</span> <span class="na">select=</span><span class="s">&quot;&#39;Title &#39;&quot;</span> <span class="nt">/&gt;</span>
+    <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;subelements&quot;</span> <span class="na">select=</span><span class="s">&quot;subtitle|section&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;/xsl:call-template&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;subtitle&quot;</span><span class="nt">&gt;</span>
+  <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;hierarchy&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;num-prefix&quot;</span> <span class="na">select=</span><span class="s">&quot;&#39;Subtitle &#39;&quot;</span> <span class="nt">/&gt;</span>
+    <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;subelements&quot;</span> <span class="na">select=</span><span class="s">&quot;part|section&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;/xsl:call-template&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;chapter&quot;</span><span class="nt">&gt;</span>
+  <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;hierarchy&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;num-prefix&quot;</span> <span class="na">select=</span><span class="s">&quot;&#39;Chapter &#39;&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;/xsl:call-template&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;part&quot;</span><span class="nt">&gt;</span>
+  <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;hierarchy&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;num-prefix&quot;</span> <span class="na">select=</span><span class="s">&quot;&#39;Part &#39;&quot;</span> <span class="nt">/&gt;</span>
+    <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;subelements&quot;</span> <span class="na">select=</span><span class="s">&quot;section&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;/xsl:call-template&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;section&quot;</span><span class="nt">&gt;</span>
+  <span class="k">&lt;xsl:param</span> <span class="na">name=</span><span class="s">&quot;period&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;xsl:param</span> <span class="na">name=</span><span class="s">&quot;originalId&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;xsl:param</span> <span class="na">name=</span><span class="s">&quot;alternativeTo&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;xsl:param</span> <span class="na">name=</span><span class="s">&quot;style&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;xsl:param</span> <span class="na">name=</span><span class="s">&quot;title&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;xsl:param</span> <span class="na">name=</span><span class="s">&quot;suppress-heading&quot;</span> <span class="na">select=</span><span class="s">&quot;false()&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;hierarchy&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;period&quot;</span> <span class="na">select=</span><span class="s">&quot;$period&quot;</span> <span class="nt">/&gt;</span>
+    <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;originalId&quot;</span> <span class="na">select=</span><span class="s">&quot;$originalId&quot;</span> <span class="nt">/&gt;</span>
+    <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;alternativeTo&quot;</span> <span class="na">select=</span><span class="s">&quot;$alternativeTo&quot;</span> <span class="nt">/&gt;</span>
+    <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;style&quot;</span> <span class="na">select=</span><span class="s">&quot;$style&quot;</span> <span class="nt">/&gt;</span>
+    <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;title&quot;</span> <span class="na">select=</span><span class="s">&quot;$title&quot;</span> <span class="nt">/&gt;</span>
+    <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;num-prefix&quot;</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:choose</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:when</span> <span class="na">test=</span><span class="s">&quot;@section-type = &#39;section-one&#39;&quot;</span><span class="nt">&gt;</span>
+          <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>Section. <span class="k">&lt;/xsl:text&gt;</span>
+        <span class="k">&lt;/xsl:when&gt;</span>
+        <span class="k">&lt;xsl:otherwise</span><span class="nt">&gt;</span>
+          <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>Sec. <span class="k">&lt;/xsl:text&gt;</span>
+        <span class="k">&lt;/xsl:otherwise&gt;</span>
+      <span class="k">&lt;/xsl:choose&gt;</span>
+    <span class="k">&lt;/xsl:with-param&gt;</span>
+    <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;suppress-heading&quot;</span> <span class="na">select=</span><span class="s">&quot;$suppress-heading&quot;</span> <span class="nt">/&gt;</span>
+    <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;subelements&quot;</span> <span class="na">select=</span><span class="s">&quot;subsection | paragraph&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;/xsl:call-template&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;subsection&quot;</span><span class="nt">&gt;</span>
+  <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;hierarchy&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;subelements&quot;</span> <span class="na">select=</span><span class="s">&quot;paragraph&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;/xsl:call-template&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;paragraph&quot;</span><span class="nt">&gt;</span>
+  <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;hierarchy&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;subelements&quot;</span> <span class="na">select=</span><span class="s">&quot;subparagraph&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;/xsl:call-template&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;subparagraph&quot;</span><span class="nt">&gt;</span>
+  <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;hierarchy&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;subelements&quot;</span> <span class="na">select=</span><span class="s">&quot;clause&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;/xsl:call-template&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;clause&quot;</span><span class="nt">&gt;</span>
+  <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;hierarchy&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;subelements&quot;</span> <span class="na">select=</span><span class="s">&quot;subclause&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;/xsl:call-template&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;subclause&quot;</span><span class="nt">&gt;</span>
+  <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;hierarchy&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;subelements&quot;</span> <span class="na">select=</span><span class="s">&quot;item&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;/xsl:call-template&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;subclause/item&quot;</span><span class="nt">&gt;</span>
+  <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;hierarchy&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;ename&quot;</span> <span class="na">select=</span><span class="s">&quot;&#39;point&#39;&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;/xsl:call-template&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;appropriations-major&quot;</span><span class="nt">&gt;</span>
+  <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;hierarchy&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;ename&quot;</span> <span class="na">select=</span><span class="s">&quot;&#39;hcontainer&#39;&quot;</span> <span class="nt">/&gt;</span>
+    <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;name-attr&quot;</span> <span class="na">select=</span><span class="s">&quot;&#39;appropriations&#39;&quot;</span> <span class="nt">/&gt;</span>
+    <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;class&quot;</span> <span class="na">select=</span><span class="s">&quot;&#39;major&#39;&quot;</span> <span class="nt">/&gt;</span>  
+    <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;subelements&quot;</span> <span class="na">select=</span><span class="s">&quot;appropriations-major | appropriations-intermediate | appropriations-small | section&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;/xsl:call-template&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;appropriations-intermediate&quot;</span><span class="nt">&gt;</span>
+  <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;hierarchy&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;ename&quot;</span> <span class="na">select=</span><span class="s">&quot;&#39;hcontainer&#39;&quot;</span> <span class="nt">/&gt;</span>
+    <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;name-attr&quot;</span> <span class="na">select=</span><span class="s">&quot;&#39;appropriations&#39;&quot;</span> <span class="nt">/&gt;</span>
+    <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;class&quot;</span> <span class="na">select=</span><span class="s">&quot;&#39;intermediate&#39;&quot;</span> <span class="nt">/&gt;</span> 
+    <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;subelements&quot;</span> <span class="na">select=</span><span class="s">&quot;appropriations-small | section&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;/xsl:call-template&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;appropriations-small&quot;</span><span class="nt">&gt;</span>
+  <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;hierarchy&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;ename&quot;</span> <span class="na">select=</span><span class="s">&quot;&#39;hcontainer&#39;&quot;</span> <span class="nt">/&gt;</span>
+    <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;name-attr&quot;</span> <span class="na">select=</span><span class="s">&quot;&#39;appropriations&#39;&quot;</span> <span class="nt">/&gt;</span>
+    <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;class&quot;</span> <span class="na">select=</span><span class="s">&quot;&#39;small&#39;&quot;</span> <span class="nt">/&gt;</span>  
+    <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;subelements&quot;</span> <span class="na">select=</span><span class="s">&quot;paragraph&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;/xsl:call-template&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+
+<span class="c">&lt;!-- tables of contents --&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;toc&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;toc</span> <span class="na">currentId=</span><span class="s">&quot;{generate-id()}&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:apply-templates</span> <span class="na">select=</span><span class="s">&quot;toc-entry|multi-column-toc-entry&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/toc&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;toc-entry&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;tocItem&gt;</span>
+    <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;href&quot;</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>#<span class="k">&lt;/xsl:text&gt;</span>
+      <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;id&quot;</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;node&quot;</span> <span class="na">select=</span><span class="s">&quot;key(&#39;id&#39;, @idref)&quot;</span> <span class="nt">/&gt;</span>
+      <span class="k">&lt;/xsl:call-template&gt;</span>
+    <span class="k">&lt;/xsl:attribute&gt;</span>
+    <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;level&quot;</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:choose</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:when</span> <span class="na">test=</span><span class="s">&quot;@level = &#39;division&#39;&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>1<span class="k">&lt;/xsl:text&gt;&lt;/xsl:when&gt;</span>
+        <span class="k">&lt;xsl:when</span> <span class="na">test=</span><span class="s">&quot;@level = &#39;title&#39;&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>2<span class="k">&lt;/xsl:text&gt;&lt;/xsl:when&gt;</span>
+        <span class="k">&lt;xsl:when</span> <span class="na">test=</span><span class="s">&quot;@level = &#39;subtitle&#39;&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>3<span class="k">&lt;/xsl:text&gt;&lt;/xsl:when&gt;</span>
+        <span class="k">&lt;xsl:when</span> <span class="na">test=</span><span class="s">&quot;@level = &#39;part&#39;&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>4<span class="k">&lt;/xsl:text&gt;&lt;/xsl:when&gt;</span>
+        <span class="k">&lt;xsl:when</span> <span class="na">test=</span><span class="s">&quot;@level = &#39;section&#39;&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>5<span class="k">&lt;/xsl:text&gt;&lt;/xsl:when&gt;</span>
+        <span class="k">&lt;xsl:otherwise</span><span class="nt">&gt;</span><span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>6<span class="k">&lt;/xsl:text&gt;&lt;/xsl:otherwise&gt;</span>
+      <span class="k">&lt;/xsl:choose&gt;</span>
+    <span class="k">&lt;/xsl:attribute&gt;</span>
+    <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;class&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;@level&quot;</span> <span class="nt">/&gt;</span><span class="k">&lt;/xsl:attribute&gt;</span>
+    <span class="k">&lt;xsl:apply-templates</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/tocItem&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;multi-column-toc-entry&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;tocItem&gt;</span>
+    <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;href&quot;</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>#<span class="k">&lt;/xsl:text&gt;</span>
+      <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;id&quot;</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;node&quot;</span> <span class="na">select=</span><span class="s">&quot;key(&#39;id&#39;, @idref)&quot;</span> <span class="nt">/&gt;</span>
+      <span class="k">&lt;/xsl:call-template&gt;</span>
+    <span class="k">&lt;/xsl:attribute&gt;</span>
+    <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;level&quot;</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:choose</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:when</span> <span class="na">test=</span><span class="s">&quot;@level = &#39;division&#39;&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>1<span class="k">&lt;/xsl:text&gt;&lt;/xsl:when&gt;</span>
+        <span class="k">&lt;xsl:when</span> <span class="na">test=</span><span class="s">&quot;@level = &#39;title&#39;&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>2<span class="k">&lt;/xsl:text&gt;&lt;/xsl:when&gt;</span>
+        <span class="k">&lt;xsl:when</span> <span class="na">test=</span><span class="s">&quot;@level = &#39;subtitle&#39;&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>3<span class="k">&lt;/xsl:text&gt;&lt;/xsl:when&gt;</span>
+        <span class="k">&lt;xsl:when</span> <span class="na">test=</span><span class="s">&quot;@level = &#39;section&#39;&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>4<span class="k">&lt;/xsl:text&gt;&lt;/xsl:when&gt;</span>
+        <span class="k">&lt;xsl:otherwise</span><span class="nt">&gt;</span><span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>5<span class="k">&lt;/xsl:text&gt;&lt;/xsl:otherwise&gt;</span>
+      <span class="k">&lt;/xsl:choose&gt;</span>
+    <span class="k">&lt;/xsl:attribute&gt;</span>
+    <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;class&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>multi-column<span class="k">&lt;/xsl:text&gt;&lt;/xsl:attribute&gt;</span>
+    <span class="nt">&lt;span&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;toc-enum&quot;</span> <span class="nt">/&gt;&lt;/span&gt;</span>
+    <span class="nt">&lt;span&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;level-header&quot;</span> <span class="nt">/&gt;&lt;/span&gt;</span>
+    <span class="nt">&lt;span&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;target&quot;</span> <span class="nt">/&gt;&lt;/span&gt;</span>
+  <span class="nt">&lt;/tocItem&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+
+<span class="c">&lt;!-- lists --&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;list&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;ul</span> <span class="na">class=</span><span class="s">&quot;{@level}&quot;</span> <span class="na">currentId=</span><span class="s">&quot;{generate-id()}&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:apply-templates</span> <span class="na">select=</span><span class="s">&quot;list-item&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/ul&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;list-item&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;li&gt;</span>
+    <span class="k">&lt;xsl:apply-templates</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/li&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+
+<span class="c">&lt;!-- tables --&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;table&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;table</span> <span class="na">currentId=</span><span class="s">&quot;{generate-id()}&quot;</span> <span class="na">class=</span><span class="s">&quot;{@frame}&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:choose</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:when</span> <span class="na">test=</span><span class="s">&quot;@frame = &#39;topbot&#39;&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;caption&gt;</span>
+          <span class="k">&lt;xsl:apply-templates</span> <span class="na">select=</span><span class="s">&quot;tgroup/thead/row[1]/entry[1]/node()&quot;</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/caption&gt;</span>
+        <span class="k">&lt;xsl:for-each</span> <span class="na">select=</span><span class="s">&quot;tgroup/thead/row[position() &gt; 1]&quot;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;tr&gt;</span><span class="k">&lt;xsl:apply-templates</span> <span class="na">select=</span><span class="s">&quot;entry&quot;</span> <span class="nt">/&gt;&lt;/tr&gt;</span>
+        <span class="k">&lt;/xsl:for-each&gt;</span>
+        <span class="k">&lt;xsl:for-each</span> <span class="na">select=</span><span class="s">&quot;tgroup/tbody/row&quot;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;tr&gt;</span><span class="k">&lt;xsl:apply-templates</span> <span class="na">select=</span><span class="s">&quot;entry&quot;</span> <span class="nt">/&gt;&lt;/tr&gt;</span>
+        <span class="k">&lt;/xsl:for-each&gt;</span>
+      <span class="k">&lt;/xsl:when&gt;</span>
+      <span class="k">&lt;xsl:otherwise</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;ttitle&quot;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;caption&gt;</span>
+            <span class="k">&lt;xsl:apply-templates</span> <span class="na">select=</span><span class="s">&quot;ttitle/node()&quot;</span> <span class="nt">/&gt;</span>
+          <span class="nt">&lt;/caption&gt;</span>
+        <span class="k">&lt;/xsl:if&gt;</span>
+        <span class="k">&lt;xsl:for-each</span> <span class="na">select=</span><span class="s">&quot;*/*/row&quot;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;tr&gt;</span>
+            <span class="k">&lt;xsl:apply-templates</span> <span class="na">select=</span><span class="s">&quot;entry&quot;</span> <span class="nt">/&gt;</span>
+          <span class="nt">&lt;/tr&gt;</span>
+        <span class="k">&lt;/xsl:for-each&gt;</span>
+      <span class="k">&lt;/xsl:otherwise&gt;</span>
+    <span class="k">&lt;/xsl:choose&gt;</span>
+  <span class="nt">&lt;/table&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;thead/row/entry&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;th&gt;</span>
+    <span class="k">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;@namest and @nameend&quot;</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;colspan&quot;</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;number(substring(@nameend,7)) - number(substring(@namest,7))&quot;</span><span class="nt">&gt;</span><span class="k">&lt;/xsl:value-of&gt;</span>
+      <span class="k">&lt;/xsl:attribute&gt;</span>
+    <span class="k">&lt;/xsl:if&gt;</span>
+    <span class="k">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;@align&quot;</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;style&quot;</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>text-align:<span class="k">&lt;/xsl:text&gt;</span>
+        <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;@align&quot;</span> <span class="nt">/&gt;</span>
+      <span class="k">&lt;/xsl:attribute&gt;</span>
+    <span class="k">&lt;/xsl:if&gt;</span>
+    <span class="nt">&lt;p&gt;</span>
+      <span class="k">&lt;xsl:apply-templates</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/p&gt;</span>
+  <span class="nt">&lt;/th&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;tbody/row/entry&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;td&gt;</span>
+    <span class="nt">&lt;p&gt;</span>
+      <span class="k">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;@align&quot;</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;style&quot;</span><span class="nt">&gt;</span>
+          <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>text-align:<span class="k">&lt;/xsl:text&gt;</span>
+          <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;@align&quot;</span> <span class="nt">/&gt;</span>
+        <span class="k">&lt;/xsl:attribute&gt;</span>
+      <span class="k">&lt;/xsl:if&gt;</span>
+      <span class="k">&lt;xsl:apply-templates</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/p&gt;</span>
+  <span class="nt">&lt;/td&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+
+<span class="c">&lt;!-- attestations --&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">name=</span><span class="s">&quot;attestation&quot;</span> <span class="na">match=</span><span class="s">&quot;attestation&quot;</span><span class="nt">&gt;</span>
+  <span class="k">&lt;xsl:param</span> <span class="na">name=</span><span class="s">&quot;show-attest&quot;</span> <span class="na">select=</span><span class="s">&quot;true()&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;xsl:for-each</span> <span class="na">select=</span><span class="s">&quot;attestation-group&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;attestation-date&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;p&gt;</span>
+        <span class="nt">&lt;date&gt;</span>
+          <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;date&quot;</span><span class="nt">&gt;</span>
+            <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;hyphenate-date&quot;</span><span class="nt">&gt;</span>
+              <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;compact&quot;</span> <span class="na">select=</span><span class="s">&quot;attestation-date/@date&quot;</span> <span class="nt">/&gt;</span>
+            <span class="k">&lt;/xsl:call-template&gt;</span>
+          <span class="k">&lt;/xsl:attribute&gt;</span>
+          <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;attestation-date&quot;</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;/date&gt;</span>
+      <span class="nt">&lt;/p&gt;</span>
+    <span class="k">&lt;/xsl:if&gt;</span>
+  
+    <span class="k">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;$show-attest&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;p&gt;</span>Attest:<span class="nt">&lt;/p&gt;</span>
+    <span class="k">&lt;/xsl:if&gt;</span>
+  
+    <span class="nt">&lt;p</span> <span class="na">class=</span><span class="s">&quot;signature&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;signature&gt;</span>     
+        <span class="k">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;attestor != &#39;&#39;&quot;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;person</span> <span class="na">currentId=</span><span class="s">&quot;{generate-id(attestor)}&quot;</span> <span class="na">refersTo=</span><span class="s">&quot;#{concat(&#39;ref&#39;,generate-id(attestor))}&quot;</span><span class="nt">&gt;</span>
+            <span class="k">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;role&quot;</span><span class="nt">&gt;</span>
+              <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;as&quot;</span><span class="nt">&gt;</span>
+                <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>#<span class="k">&lt;/xsl:text&gt;</span>
+                <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;concat(&#39;ref&#39;,generate-id(role))&quot;</span><span class="nt">/&gt;</span>
+              <span class="k">&lt;/xsl:attribute&gt;</span>
+            <span class="k">&lt;/xsl:if&gt;</span>
+            <span class="k">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;attestor/@display = &#39;no&#39;&quot;</span><span class="nt">&gt;</span>
+              <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;style&quot;</span><span class="nt">&gt;</span>
+                <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;&#39;display:none&#39;&quot;</span> <span class="nt">/&gt;</span>
+              <span class="k">&lt;/xsl:attribute&gt;</span>
+            <span class="k">&lt;/xsl:if&gt;</span>
+            <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;attestor&quot;</span><span class="nt">/&gt;</span>
+          <span class="nt">&lt;/person&gt;</span>
+        <span class="k">&lt;/xsl:if&gt;</span>
+        <span class="k">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;role&quot;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;role</span> <span class="na">currentId=</span><span class="s">&quot;{generate-id(role)}&quot;</span> <span class="na">refersTo=</span><span class="s">&quot;#{concat(&#39;ref&#39;,generate-id(role))}&quot;</span><span class="nt">&gt;</span>
+            <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;role&quot;</span><span class="nt">/&gt;</span>
+          <span class="nt">&lt;/role&gt;</span>
+        <span class="k">&lt;/xsl:if&gt;</span>
+      <span class="nt">&lt;/signature&gt;</span>
+    <span class="nt">&lt;/p&gt;</span>
+  <span class="k">&lt;/xsl:for-each&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+
+<span class="c">&lt;!-- meta --&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">name=</span><span class="s">&quot;meta-identify&quot;</span><span class="nt">&gt;</span>
+<span class="k">&lt;xsl:param</span> <span class="na">name=</span><span class="s">&quot;doc-type&quot;</span> <span class="na">select=</span><span class="s">&quot;&#39;bill&#39;&quot;</span> <span class="nt">/&gt;</span>
+<span class="k">&lt;xsl:param</span> <span class="na">name=</span><span class="s">&quot;chamber&quot;</span> <span class="na">select=</span><span class="s">&quot;&#39;house&#39;&quot;</span> <span class="nt">/&gt;</span>
+<span class="k">&lt;xsl:param</span> <span class="na">name=</span><span class="s">&quot;work-date&quot;</span> <span class="nt">/&gt;</span>
+<span class="k">&lt;xsl:param</span> <span class="na">name=</span><span class="s">&quot;num&quot;</span> <span class="nt">/&gt;</span>
+<span class="k">&lt;xsl:param</span> <span class="na">name=</span><span class="s">&quot;prescriptive&quot;</span> <span class="na">select=</span><span class="s">&quot;true()&quot;</span> <span class="nt">/&gt;</span>
+<span class="k">&lt;xsl:param</span> <span class="na">name=</span><span class="s">&quot;expr-date&quot;</span> <span class="na">select=</span><span class="s">&quot;&#39;&#39;&quot;</span> <span class="nt">/&gt;</span>
+<span class="k">&lt;xsl:param</span> <span class="na">name=</span><span class="s">&quot;expr-date-type&quot;</span> <span class="na">select=</span><span class="s">&quot;&#39;generation&#39;&quot;</span> <span class="nt">/&gt;</span>
+<span class="k">&lt;xsl:param</span> <span class="na">name=</span><span class="s">&quot;expr-author-id&quot;</span> <span class="na">select=</span><span class="s">&quot;$chamber&quot;</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;identification</span> <span class="na">source=</span><span class="s">&quot;#mangiafico&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;FRBRWork&gt;</span>
+    <span class="nt">&lt;FRBRthis</span> <span class="na">value=</span><span class="s">&quot;/us/{$doc-type}/{$chamber}/{$work-date}/{$num}/main&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;FRBRuri</span> <span class="na">value=</span><span class="s">&quot;/us/{$doc-type}/{$chamber}/{$work-date}/{$num}&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;FRBRdate</span> <span class="na">date=</span><span class="s">&quot;{$work-date}&quot;</span> <span class="na">name=</span><span class="s">&quot;generation&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;FRBRauthor</span> <span class="na">href=</span><span class="s">&quot;#{$chamber}&quot;</span> <span class="na">as=</span><span class="s">&quot;#author&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;FRBRcountry</span> <span class="na">value=</span><span class="s">&quot;US&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;FRBRnumber</span> <span class="na">value=</span><span class="s">&quot;{$num}&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;FRBRprescriptive&gt;</span>
+      <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;value&quot;</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:choose</span><span class="nt">&gt;</span>
+          <span class="k">&lt;xsl:when</span> <span class="na">test=</span><span class="s">&quot;$prescriptive&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>true<span class="k">&lt;/xsl:text&gt;&lt;/xsl:when&gt;</span>
+          <span class="k">&lt;xsl:otherwise</span><span class="nt">&gt;</span><span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>false<span class="k">&lt;/xsl:text&gt;&lt;/xsl:otherwise&gt;</span>
+        <span class="k">&lt;/xsl:choose&gt;</span>
+      <span class="k">&lt;/xsl:attribute&gt;</span>
+    <span class="nt">&lt;/FRBRprescriptive&gt;</span>
+    <span class="nt">&lt;FRBRauthoritative</span> <span class="na">value=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/FRBRWork&gt;</span>
+  <span class="nt">&lt;FRBRExpression&gt;</span>
+    <span class="nt">&lt;FRBRthis</span> <span class="na">value=</span><span class="s">&quot;/us/{$doc-type}/{$chamber}/{$work-date}/{$num}/eng@{$expr-date}/main&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;FRBRuri</span> <span class="na">value=</span><span class="s">&quot;/us/{$doc-type}/{$chamber}/{$work-date}/{$num}/eng@{$expr-date}&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;FRBRdate&gt;</span>
+      <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;date&quot;</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:choose</span><span class="nt">&gt;</span>
+          <span class="k">&lt;xsl:when</span> <span class="na">test=</span><span class="s">&quot;$expr-date&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;$expr-date&quot;</span> <span class="nt">/&gt;</span><span class="k">&lt;/xsl:when&gt;</span>
+          <span class="k">&lt;xsl:otherwise</span><span class="nt">&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;$work-date&quot;</span> <span class="nt">/&gt;</span><span class="k">&lt;/xsl:otherwise&gt;</span>
+        <span class="k">&lt;/xsl:choose&gt;</span>
+      <span class="k">&lt;/xsl:attribute&gt;</span>
+      <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;name&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;$expr-date-type&quot;</span> <span class="nt">/&gt;</span><span class="k">&lt;/xsl:attribute&gt;</span>
+    <span class="nt">&lt;/FRBRdate&gt;</span>
+    <span class="nt">&lt;FRBRauthor</span> <span class="na">href=</span><span class="s">&quot;#{$expr-author-id}&quot;</span> <span class="na">as=</span><span class="s">&quot;#author&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;FRBRlanguage</span> <span class="na">language=</span><span class="s">&quot;eng&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/FRBRExpression&gt;</span>
+  <span class="nt">&lt;FRBRManifestation&gt;</span>
+    <span class="nt">&lt;FRBRthis</span> <span class="na">value=</span><span class="s">&quot;/us/{$doc-type}/{$chamber}/{$work-date}/{$num}/eng@{$expr-date}/main.xml&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;FRBRuri</span> <span class="na">value=</span><span class="s">&quot;/us/{$doc-type}/{$chamber}/{$work-date}/{$num}/eng@{$expr-date}.akn&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;FRBRdate&gt;</span>
+      <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;date&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;$today&quot;</span> <span class="nt">/&gt;</span><span class="k">&lt;/xsl:attribute&gt;</span>
+      <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;name&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>generation<span class="k">&lt;/xsl:text&gt;&lt;/xsl:attribute&gt;</span>
+    <span class="nt">&lt;/FRBRdate&gt;</span>
+    <span class="nt">&lt;FRBRauthor</span> <span class="na">href=</span><span class="s">&quot;#mangiafico&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;FRBRformat</span> <span class="na">value=</span><span class="s">&quot;xml&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/FRBRManifestation&gt;</span>
+<span class="nt">&lt;/identification&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">name=</span><span class="s">&quot;meta-lifecycle&quot;</span><span class="nt">&gt;</span>
+<span class="k">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;form/action[action-date] | //attestation-group[attestation-date]&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;lifecycle</span> <span class="na">source=</span><span class="s">&quot;#mangiafico&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:for-each</span> <span class="na">select=</span><span class="s">&quot;form/action[action-date]&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;eventRef</span> <span class="na">currentId=</span><span class="s">&quot;ref{generate-id()}&quot;</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;date&quot;</span><span class="nt">&gt;</span>
+          <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;hyphenate-date&quot;</span><span class="nt">&gt;</span>
+            <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;compact&quot;</span> <span class="na">select=</span><span class="s">&quot;action-date/@date&quot;</span> <span class="nt">/&gt;</span>
+          <span class="k">&lt;/xsl:call-template&gt;</span>
+        <span class="k">&lt;/xsl:attribute&gt;</span>
+        <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;type&quot;</span><span class="nt">&gt;</span>
+          <span class="k">&lt;xsl:choose</span><span class="nt">&gt;</span>
+            <span class="k">&lt;xsl:when</span> <span class="na">test=</span><span class="s">&quot;position() = 1&quot;</span><span class="nt">&gt;</span>
+              <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>generation<span class="k">&lt;/xsl:text&gt;</span>
+            <span class="k">&lt;/xsl:when&gt;</span>
+            <span class="k">&lt;xsl:otherwise</span><span class="nt">&gt;</span>
+              <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>amendment<span class="k">&lt;/xsl:text&gt;</span>
+            <span class="k">&lt;/xsl:otherwise&gt;</span>
+          <span class="k">&lt;/xsl:choose&gt;</span>
+        <span class="k">&lt;/xsl:attribute&gt;</span>
+        <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;source&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>#mangiafico<span class="k">&lt;/xsl:text&gt;&lt;/xsl:attribute&gt;</span>
+      <span class="nt">&lt;/eventRef&gt;</span>
+    <span class="k">&lt;/xsl:for-each&gt;</span>
+    <span class="k">&lt;xsl:for-each</span> <span class="na">select=</span><span class="s">&quot;//attestation-group[attestation-date]&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;eventRef</span> <span class="na">currentId=</span><span class="s">&quot;ref{generate-id()}&quot;</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;date&quot;</span><span class="nt">&gt;</span>
+          <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;hyphenate-date&quot;</span><span class="nt">&gt;</span>
+            <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;compact&quot;</span> <span class="na">select=</span><span class="s">&quot;attestation-date/@date&quot;</span> <span class="nt">/&gt;</span>
+          <span class="k">&lt;/xsl:call-template&gt;</span>
+        <span class="k">&lt;/xsl:attribute&gt;</span>
+        <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;type&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>generation<span class="k">&lt;/xsl:text&gt;&lt;/xsl:attribute&gt;</span>
+        <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;source&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>#mangiafico<span class="k">&lt;/xsl:text&gt;&lt;/xsl:attribute&gt;</span>
+      <span class="nt">&lt;/eventRef&gt;</span>
+    <span class="k">&lt;/xsl:for-each&gt;</span>
+  <span class="nt">&lt;/lifecycle&gt;</span>
+<span class="k">&lt;/xsl:if&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">name=</span><span class="s">&quot;meta-references&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;TLCOrganization</span> <span class="na">currentId=</span><span class="s">&quot;house&quot;</span> <span class="na">href=</span><span class="s">&quot;/ontology/organization/us/us.House&quot;</span> <span class="na">showAs=</span><span class="s">&quot;United States House of Representatives&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;TLCOrganization</span> <span class="na">currentId=</span><span class="s">&quot;senate&quot;</span> <span class="na">href=</span><span class="s">&quot;/ontology/organization/us/us.Senate&quot;</span> <span class="na">showAs=</span><span class="s">&quot;United States Senate&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;xsl:for-each</span> <span class="na">select=</span><span class="s">&quot;/bill//committee-name[generate-id()=generate-id(key(&#39;committee-name&#39;, @committee-id)[1])]&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;TLCOrganization</span> <span class="na">currentId=</span><span class="s">&quot;{@committee-id}&quot;</span> <span class="na">href=</span><span class="s">&quot;/ontology/organization/us/us.{translate(.,&#39; .&#39;,&#39;&#39;)}&quot;</span> <span class="na">showAs=</span><span class="s">&quot;{.}&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;/xsl:for-each&gt;</span>
+  <span class="k">&lt;xsl:for-each</span> <span class="na">select=</span><span class="s">&quot;/bill//*[self::sponsor|self::cosponsor][generate-id()=generate-id(key(&#39;sponsor&#39;, @name-id)[1])]&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:variable</span> <span class="na">name=</span><span class="s">&quot;without-prefix&quot;</span> <span class="na">select=</span><span class="s">&quot;substring-after(., &#39; &#39;)&quot;</span> <span class="nt">/&gt;</span>
+    <span class="k">&lt;xsl:variable</span> <span class="na">name=</span><span class="s">&quot;without-state&quot;</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:choose</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:when</span> <span class="na">test=</span><span class="s">&quot;contains($without-prefix, &#39; &#39;)&quot;</span><span class="nt">&gt;</span>
+          <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;substring-before($without-prefix, &#39; &#39;)&quot;</span> <span class="nt">/&gt;</span>
+        <span class="k">&lt;/xsl:when&gt;</span>
+        <span class="k">&lt;xsl:otherwise</span><span class="nt">&gt;</span>
+          <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;$without-prefix&quot;</span> <span class="nt">/&gt;</span>
+        <span class="k">&lt;/xsl:otherwise&gt;</span>
+      <span class="k">&lt;/xsl:choose&gt;</span>
+    <span class="k">&lt;/xsl:variable&gt;</span>
+    <span class="nt">&lt;TLCPerson</span> <span class="na">currentId=</span><span class="s">&quot;{@name-id}&quot;</span> <span class="na">href=</span><span class="s">&quot;/ontology/persons/us.{translate($without-state,&#39; .&#39;,&#39;&#39;)}&quot;</span> <span class="na">showAs=</span><span class="s">&quot;{.}&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;/xsl:for-each&gt;</span>
+  <span class="k">&lt;xsl:for-each</span> <span class="na">select=</span><span class="s">&quot;//attestor[text()]&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;TLCPerson</span> <span class="na">currentId=</span><span class="s">&quot;ref{generate-id()}&quot;</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;href&quot;</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>ontology/persons/us.<span class="k">&lt;/xsl:text&gt;</span>
+        <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;translate(.,&#39; .&#39;,&#39;&#39;)&quot;</span> <span class="nt">/&gt;</span>
+      <span class="k">&lt;/xsl:attribute&gt;</span>
+      <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;showAs&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;.&quot;</span><span class="nt">/&gt;</span><span class="k">&lt;/xsl:attribute&gt;</span>
+    <span class="nt">&lt;/TLCPerson&gt;</span>
+  <span class="k">&lt;/xsl:for-each&gt;</span>
+  <span class="nt">&lt;TLCPerson</span> <span class="na">currentId=</span><span class="s">&quot;mangiafico&quot;</span> <span class="na">href=</span><span class="s">&quot;/ontology/persons/us.Mangiafico&quot;</span> <span class="na">showAs=</span><span class="s">&quot;Jim Mangiafico&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;//attestor&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;TLCRole</span> <span class="na">currentId=</span><span class="s">&quot;attestor&quot;</span> <span class="na">href=</span><span class="s">&quot;/ontology/role/us.attestor&quot;</span> <span class="na">showAs=</span><span class="s">&quot;Attestor&quot;</span><span class="nt">/&gt;</span>
+  <span class="k">&lt;/xsl:if&gt;</span>
+  <span class="k">&lt;xsl:for-each</span> <span class="na">select=</span><span class="s">&quot;attestation/attestation-group/role&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;TLCRole</span> <span class="na">currentId=</span><span class="s">&quot;ref{generate-id()}&quot;</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;href&quot;</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>ontology/role/us.<span class="k">&lt;/xsl:text&gt;</span>
+        <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;translate(.,&#39; .&#39;,&#39;&#39;)&quot;</span> <span class="nt">/&gt;</span>
+      <span class="k">&lt;/xsl:attribute&gt;</span>
+      <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;showAs&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;.&quot;</span><span class="nt">/&gt;</span><span class="k">&lt;/xsl:attribute&gt;</span>
+    <span class="nt">&lt;/TLCRole&gt;</span>
+  <span class="k">&lt;/xsl:for-each&gt;</span>
+  <span class="nt">&lt;TLCRole</span> <span class="na">currentId=</span><span class="s">&quot;author&quot;</span> <span class="na">href=</span><span class="s">&quot;/ontology/role/author&quot;</span> <span class="na">showAs=</span><span class="s">&quot;Author&quot;</span><span class="nt">/&gt;</span>
+  <span class="k">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;count(//legis-body) &gt; 1&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;TLCConcept</span> <span class="na">currentId=</span><span class="s">&quot;originalLanguage&quot;</span> <span class="na">href=</span><span class="s">&quot;/ontology/concepts/un/originalLanguage&quot;</span> <span class="na">showAs=</span><span class="s">&quot;Original Language&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;TLCConcept</span> <span class="na">currentId=</span><span class="s">&quot;currentLanguage&quot;</span> <span class="na">href=</span><span class="s">&quot;/ontology/concepts/un/currentLanguage&quot;</span> <span class="na">showAs=</span><span class="s">&quot;Current Language&quot;</span><span class="nt">/&gt;</span>
+  <span class="k">&lt;/xsl:if&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">name=</span><span class="s">&quot;meta-proprietary&quot;</span><span class="nt">&gt;</span>
+  <span class="k">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;/bill/metadata/dublinCore/*&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;proprietary</span> <span class="na">source=</span><span class="s">&quot;#mangiafico&quot;</span> <span class="na">xmlns:dc=</span><span class="s">&quot;http://purl.org/dc/elements/1.1/&quot;</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:for-each</span> <span class="na">select=</span><span class="s">&quot;/bill/metadata/dublinCore/*&quot;</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:copy-of</span> <span class="na">select=</span><span class="s">&quot;.&quot;</span><span class="nt">/&gt;</span>
+      <span class="k">&lt;/xsl:for-each&gt;</span>
+    <span class="nt">&lt;/proprietary&gt;</span>
+  <span class="k">&lt;/xsl:if&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+
+<span class="c">&lt;!-- Resolution --&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;/resolution&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;bill</span> <span class="na">name=</span><span class="s">&quot;concurrent resolution&quot;</span><span class="nt">&gt;</span>
+  
+    <span class="nt">&lt;meta&gt;</span>
+    
+      <span class="k">&lt;xsl:variable</span> <span class="na">name=</span><span class="s">&quot;work-date&quot;</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;hyphenate-date&quot;</span><span class="nt">&gt;</span>
+          <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;compact&quot;</span> <span class="na">select=</span><span class="s">&quot;//attestation[attestation-group/attestation-date][last()]/attestation-group/attestation-date/@date&quot;</span> <span class="nt">/&gt;</span>
+        <span class="k">&lt;/xsl:call-template&gt;</span>
+      <span class="k">&lt;/xsl:variable&gt;</span>
+  
+      <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;meta-identify&quot;</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;doc-type&quot;</span> <span class="na">select=</span><span class="s">&quot;&#39;resolution/concurrent&#39;&quot;</span> <span class="nt">/&gt;</span>
+        <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;work-date&quot;</span> <span class="na">select=</span><span class="s">&quot;$work-date&quot;</span> <span class="nt">/&gt;</span>
+        <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;num&quot;</span> <span class="na">select=</span><span class="s">&quot;substring-after(form/legis-num, &#39;H. CON. RES. &#39;)&quot;</span> <span class="nt">/&gt;</span>
+        <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;prescriptive&quot;</span> <span class="na">select=</span><span class="s">&quot;false()&quot;</span> <span class="nt">/&gt;</span>
+      <span class="k">&lt;/xsl:call-template&gt;</span>
+    
+      <span class="nt">&lt;publication</span>
+        <span class="na">date=</span><span class="s">&quot;{$work-date}&quot;</span>
+        <span class="na">name=</span><span class="s">&quot;H. CON. RES.&quot;</span>
+        <span class="na">number=</span><span class="s">&quot;{substring-after(form/legis-num, &#39;H. CON. RES. &#39;)}&quot;</span>
+        <span class="na">showAs=</span><span class="s">&quot;{form/legis-num}&quot;</span> <span class="nt">/&gt;</span>
+    
+      <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;meta-lifecycle&quot;</span> <span class="nt">/&gt;</span>
+    
+      <span class="nt">&lt;references</span> <span class="na">source=</span><span class="s">&quot;#mangiafico&quot;</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;meta-references&quot;</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;/references&gt;</span>
+  
+    <span class="nt">&lt;/meta&gt;</span>
+  
+    <span class="nt">&lt;coverPage&gt;</span>
+    
+      <span class="nt">&lt;p</span> <span class="na">style=</span><span class="s">&quot;display:none&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;docStage&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;@resolution-stage&quot;</span> <span class="nt">/&gt;&lt;/docStage&gt;</span>
+      <span class="nt">&lt;/p&gt;</span>
+  
+      <span class="nt">&lt;p</span> <span class="na">class=</span><span class="s">&quot;congress&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;legislature&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;form/congress&quot;</span> <span class="nt">/&gt;&lt;/legislature&gt;</span>
+        <span class="nt">&lt;br</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;session&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;form/session&quot;</span> <span class="nt">/&gt;&lt;/session&gt;</span>
+      <span class="nt">&lt;/p&gt;</span>
+  
+      <span class="nt">&lt;p&gt;&lt;docNumber&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;form/legis-num&quot;</span><span class="nt">/&gt;&lt;/docNumber&gt;&lt;/p&gt;</span>
+  
+      <span class="nt">&lt;p&gt;</span>
+        <span class="k">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;form/current-chamber/@display = &#39;no&#39;&quot;</span><span class="nt">&gt;</span>
+          <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;style&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>display:none<span class="k">&lt;/xsl:text&gt;&lt;/xsl:attribute&gt;</span>
+        <span class="k">&lt;/xsl:if&gt;</span>
+        <span class="nt">&lt;inline</span> <span class="na">name=</span><span class="s">&quot;chamber&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;form/current-chamber&quot;</span><span class="nt">/&gt;&lt;/inline&gt;</span>
+      <span class="nt">&lt;/p&gt;</span>
+      
+      <span class="nt">&lt;block</span> <span class="na">name=</span><span class="s">&quot;Horizontal Rule&quot;</span> <span class="nt">/&gt;</span>
+    
+    <span class="nt">&lt;/coverPage&gt;</span>
+    
+    <span class="nt">&lt;preface&gt;</span>
+  
+      <span class="nt">&lt;p&gt;&lt;docType&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;form/legis-type&quot;</span><span class="nt">/&gt;&lt;/docType&gt;&lt;/p&gt;</span>
+      
+      <span class="nt">&lt;p&gt;</span>
+        <span class="k">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;form/official-title/@display = &#39;no&#39;&quot;</span><span class="nt">&gt;</span>
+          <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;style&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>display:none<span class="k">&lt;/xsl:text&gt;&lt;/xsl:attribute&gt;</span>
+        <span class="k">&lt;/xsl:if&gt;</span>
+        <span class="nt">&lt;docTitle&gt;</span>
+          <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;form/official-title&quot;</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;/docTitle&gt;</span>
+      <span class="nt">&lt;/p&gt;</span>
+  
+      <span class="nt">&lt;p</span> <span class="na">style=</span><span class="s">&quot;display:none&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;docDate&gt;</span>
+          <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;date&quot;</span><span class="nt">&gt;</span>
+            <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;hyphenate-date&quot;</span><span class="nt">&gt;</span>
+              <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;compact&quot;</span> <span class="na">select=</span><span class="s">&quot;//attestation-date[1]/@date&quot;</span> <span class="nt">/&gt;</span>
+            <span class="k">&lt;/xsl:call-template&gt;</span>
+          <span class="k">&lt;/xsl:attribute&gt;</span>
+        <span class="nt">&lt;/docDate&gt;</span>
+      <span class="nt">&lt;/p&gt;</span>
+  
+      <span class="nt">&lt;formula</span> <span class="na">name=</span><span class="s">&quot;resolution&quot;</span> <span class="na">currentId=</span><span class="s">&quot;{resolution-body/section[1]/@id}&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;p&gt;</span>
+          <span class="nt">&lt;i&gt;</span><span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>Resolved by the House of Representatives (the Senate concurring), <span class="k">&lt;/xsl:text&gt;</span><span class="nt">&lt;/i&gt;</span>
+          <span class="k">&lt;xsl:apply-templates</span> <span class="na">select=</span><span class="s">&quot;resolution-body/section[1]/text/node()&quot;</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/p&gt;</span>
+      <span class="nt">&lt;/formula&gt;</span>
+  
+    <span class="nt">&lt;/preface&gt;</span>
+  
+    <span class="nt">&lt;body&gt;</span>
+      <span class="k">&lt;xsl:apply-templates</span> <span class="na">select=</span><span class="s">&quot;resolution-body/section[position() &gt; 1]&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/body&gt;</span>
+  
+    <span class="nt">&lt;conclusions&gt;</span>
+      <span class="k">&lt;xsl:apply-templates</span> <span class="na">select=</span><span class="s">&quot;attestation&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/conclusions&gt;</span>
+  
+  <span class="nt">&lt;/bill&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+
+<span class="c">&lt;!-- Enrolled bill --&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;/bill[@bill-stage = &#39;Enrolled-Bill&#39;]&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;bill</span> <span class="na">name=</span><span class="s">&quot;enrolled&quot;</span><span class="nt">&gt;</span>
+
+    <span class="nt">&lt;meta&gt;</span>
+  
+      <span class="k">&lt;xsl:variable</span> <span class="na">name=</span><span class="s">&quot;date&quot;</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;hyphenate-date&quot;</span><span class="nt">&gt;</span>
+          <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;compact&quot;</span> <span class="na">select=</span><span class="s">&quot;form/enrolled-dateline/@date&quot;</span> <span class="nt">/&gt;</span>
+        <span class="k">&lt;/xsl:call-template&gt;</span>
+      <span class="k">&lt;/xsl:variable&gt;</span>
+  
+      <span class="k">&lt;xsl:variable</span> <span class="na">name=</span><span class="s">&quot;num&quot;</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;substring-after(form/legis-num, &#39;H. R. &#39;)&quot;</span> <span class="nt">/&gt;</span>
+      <span class="k">&lt;/xsl:variable&gt;</span>
+      
+      <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;meta-identify&quot;</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;work-date&quot;</span> <span class="na">select=</span><span class="s">&quot;$date&quot;</span> <span class="nt">/&gt;</span>
+        <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;num&quot;</span> <span class="na">select=</span><span class="s">&quot;$num&quot;</span> <span class="nt">/&gt;</span>
+        <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;expr-author-id&quot;</span> <span class="na">select=</span><span class="s">&quot;&#39;congress&#39;&quot;</span> <span class="nt">/&gt;</span>
+      <span class="k">&lt;/xsl:call-template&gt;</span>      
+      
+      <span class="nt">&lt;publication</span> <span class="na">date=</span><span class="s">&quot;{$date}&quot;</span> <span class="na">name=</span><span class="s">&quot;H. R.&quot;</span> <span class="na">number=</span><span class="s">&quot;{$num}&quot;</span> <span class="na">showAs=</span><span class="s">&quot;{form/legis-num}&quot;</span> <span class="nt">/&gt;</span>
+      
+      <span class="nt">&lt;references</span> <span class="na">source=</span><span class="s">&quot;#mangiafico&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;TLCOrganization</span> <span class="na">currentId=</span><span class="s">&quot;congress&quot;</span> <span class="na">href=</span><span class="s">&quot;/ontology/organization/us/us.Congress&quot;</span> <span class="na">showAs=</span><span class="s">&quot;United States Congress&quot;</span> <span class="nt">/&gt;</span>
+        <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;meta-references&quot;</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;/references&gt;</span>
+  
+    <span class="nt">&lt;/meta&gt;</span>
+    
+    <span class="nt">&lt;coverPage&gt;</span>
+      <span class="nt">&lt;p</span> <span class="na">style=</span><span class="s">&quot;display:none&quot;</span><span class="nt">&gt;&lt;docStage&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;@bill-stage&quot;</span> <span class="nt">/&gt;&lt;/docStage&gt;&lt;/p&gt;</span>
+      <span class="nt">&lt;p</span> <span class="na">class=</span><span class="s">&quot;number&quot;</span><span class="nt">&gt;&lt;docNumber&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;form/legis-num&quot;</span><span class="nt">/&gt;&lt;/docNumber&gt;&lt;/p&gt;</span>
+      <span class="nt">&lt;p&gt;&lt;legislature&gt;</span>
+        <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;substring-before(form/congress, &#39; of the United States&#39;)&quot;</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;br</span> <span class="nt">/&gt;</span>
+        <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>of the<span class="k">&lt;/xsl:text&gt;</span>
+        <span class="nt">&lt;br</span> <span class="nt">/&gt;</span>
+        <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>United States of America<span class="k">&lt;/xsl:text&gt;</span>
+      <span class="nt">&lt;/legislature&gt;&lt;/p&gt;</span>
+      <span class="nt">&lt;p&gt;&lt;session&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;form/session&quot;</span> <span class="nt">/&gt;&lt;/session&gt;&lt;/p&gt;</span>
+      <span class="nt">&lt;p</span> <span class="na">class=</span><span class="s">&quot;date&quot;</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;substring-before(form/enrolled-dateline,&#39;,&#39;)&quot;</span> <span class="nt">/&gt;</span>
+        <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>,<span class="k">&lt;/xsl:text&gt;</span>
+        <span class="nt">&lt;br</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;docDate&gt;</span>
+          <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;date&quot;</span><span class="nt">&gt;</span>
+            <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;hyphenate-date&quot;</span><span class="nt">&gt;</span>
+              <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;compact&quot;</span> <span class="na">select=</span><span class="s">&quot;form/enrolled-dateline/@date&quot;</span> <span class="nt">/&gt;</span>
+            <span class="k">&lt;/xsl:call-template&gt;</span>
+          <span class="k">&lt;/xsl:attribute&gt;</span>
+          <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;substring-after(form/enrolled-dateline,&#39;, &#39;)&quot;</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/docDate&gt;</span>
+      <span class="nt">&lt;/p&gt;</span>
+    <span class="nt">&lt;/coverPage&gt;</span>
+  
+    <span class="nt">&lt;preface&gt;</span>
+  
+      <span class="nt">&lt;p&gt;&lt;docType&gt;</span>
+        <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;TitleCase&quot;</span><span class="nt">&gt;</span>
+          <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;text&quot;</span> <span class="na">select=</span><span class="s">&quot;form/legis-type&quot;</span> <span class="nt">/&gt;</span>
+        <span class="k">&lt;/xsl:call-template&gt;</span>
+      <span class="nt">&lt;/docType&gt;&lt;/p&gt;</span>
+  
+      <span class="nt">&lt;p</span> <span class="na">class=</span><span class="s">&quot;title&quot;</span><span class="nt">&gt;&lt;docTitle&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;form/official-title&quot;</span><span class="nt">/&gt;&lt;/docTitle&gt;&lt;/p&gt;</span>
+  
+      <span class="k">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;not(legis-body/@display-enacting-clause = &#39;no-display-enacting-clause&#39;)&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;formula</span> <span class="na">name=</span><span class="s">&quot;enacting clause&quot;</span> <span class="na">currentId=</span><span class="s">&quot;{generate-id(legis-body)}&quot;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;p&gt;</span>
+            <span class="nt">&lt;i&gt;</span><span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>Be it enacted by the Senate and House of Representatives of the United States of America in Congress assembled,<span class="k">&lt;/xsl:text&gt;</span><span class="nt">&lt;/i&gt;</span>
+          <span class="nt">&lt;/p&gt;</span>
+        <span class="nt">&lt;/formula&gt;</span>
+      <span class="k">&lt;/xsl:if&gt;</span>
+  
+    <span class="nt">&lt;/preface&gt;</span>
+  
+    <span class="nt">&lt;body&gt;</span>  
+      <span class="k">&lt;xsl:apply-templates</span> <span class="na">select=</span><span class="s">&quot;legis-body/section | legis-body/division&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/body&gt;</span>
+    
+    <span class="nt">&lt;conclusions&gt;</span>
+      <span class="k">&lt;xsl:apply-templates</span> <span class="na">select=</span><span class="s">&quot;attestation&quot;</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;show-attest&quot;</span> <span class="na">select=</span><span class="s">&quot;false()&quot;</span> <span class="nt">/&gt;</span>
+      <span class="k">&lt;/xsl:apply-templates&gt;</span>
+    <span class="nt">&lt;/conclusions&gt;</span>
+
+  <span class="nt">&lt;/bill&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+
+<span class="c">&lt;!-- Amendment --&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;/amendment-doc[@amend-type = &#39;engrossed-amendment&#39;]&quot;</span><span class="nt">&gt;</span>
+<span class="nt">&lt;amendment</span> <span class="na">name=</span><span class="s">&quot;engrossed&quot;</span><span class="nt">&gt;</span>    
+  
+  <span class="k">&lt;xsl:variable</span> <span class="na">name=</span><span class="s">&quot;work-date&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;hyphenate-date&quot;</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;compact&quot;</span> <span class="na">select=</span><span class="s">&quot;engrossed-amendment-form/action/action-date/@date&quot;</span> <span class="nt">/&gt;</span>
+    <span class="k">&lt;/xsl:call-template&gt;</span>
+  <span class="k">&lt;/xsl:variable&gt;</span>
+
+  <span class="k">&lt;xsl:variable</span> <span class="na">name=</span><span class="s">&quot;session-date&quot;</span> <span class="na">select=</span><span class="s">&quot;substring($work-date,1,4)&quot;</span> <span class="nt">/&gt;</span>
+
+  <span class="k">&lt;xsl:variable</span> <span class="na">name=</span><span class="s">&quot;num&quot;</span><span class="nt">&gt;</span>
+    <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;substring-after(engrossed-amendment-form/legis-num, &#39;H.R. &#39;)&quot;</span> <span class="nt">/&gt;</span>
+  <span class="k">&lt;/xsl:variable&gt;</span> 
+
+  <span class="nt">&lt;meta&gt;</span>
+    <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;meta-identify&quot;</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;doc-type&quot;</span> <span class="na">select=</span><span class="s">&quot;&#39;amendment&#39;&quot;</span> <span class="nt">/&gt;</span>
+      <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;chamber&quot;</span> <span class="na">select=</span><span class="s">&quot;&#39;senate&#39;&quot;</span> <span class="nt">/&gt;</span>
+      <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;work-date&quot;</span> <span class="na">select=</span><span class="s">&quot;$work-date&quot;</span> <span class="nt">/&gt;</span>
+      <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;num&quot;</span> <span class="na">select=</span><span class="s">&quot;$num&quot;</span> <span class="nt">/&gt;</span>
+    <span class="k">&lt;/xsl:call-template&gt;</span>
+    
+    <span class="k">&lt;xsl:variable</span> <span class="na">name=</span><span class="s">&quot;pub&quot;</span> <span class="na">select=</span><span class="s">&quot;engrossed-amendment-form/legis-num&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;publication</span> <span class="na">date=</span><span class="s">&quot;{$work-date}&quot;</span> <span class="na">name=</span><span class="s">&quot;H.R.&quot;</span> <span class="na">number=</span><span class="s">&quot;{substring-after($pub, &#39;H.R. &#39;)}&quot;</span> <span class="na">showAs=</span><span class="s">&quot;{concat($pub, &#39; Engrossed Amendment Senate (EAS)&#39;)}&quot;</span> <span class="nt">/&gt;</span>
+    
+    <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;meta-lifecycle&quot;</span> <span class="nt">/&gt;</span>
+
+    <span class="nt">&lt;references</span> <span class="na">source=</span><span class="s">&quot;#mangiafico&quot;</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;meta-references&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/references&gt;</span>
+  <span class="nt">&lt;/meta&gt;</span>
+
+  <span class="nt">&lt;coverPage&gt;</span>
+
+    <span class="nt">&lt;p</span> <span class="na">style=</span><span class="s">&quot;display:none&quot;</span><span class="nt">&gt;&lt;legislature&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;engrossed-amendment-form/congress&quot;</span> <span class="nt">/&gt;&lt;/legislature&gt;&lt;/p&gt;</span>
+    <span class="nt">&lt;p</span> <span class="na">style=</span><span class="s">&quot;display:none&quot;</span><span class="nt">&gt;&lt;session&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;engrossed-amendment-form/session&quot;</span> <span class="nt">/&gt;&lt;/session&gt;&lt;/p&gt;</span>
+    <span class="nt">&lt;p</span> <span class="na">style=</span><span class="s">&quot;display:none&quot;</span><span class="nt">&gt;&lt;docNumber&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;engrossed-amendment-form/legis-num&quot;</span> <span class="nt">/&gt;&lt;/docNumber&gt;&lt;/p&gt;</span>
+
+    <span class="nt">&lt;p</span> <span class="na">style=</span><span class="s">&quot;text-align:center&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;inline</span> <span class="na">name=</span><span class="s">&quot;chamber&quot;</span><span class="nt">&gt;</span>
+          <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;normalize-space(engrossed-amendment-form/current-chamber)&quot;</span><span class="nt">/&gt;</span>
+      <span class="nt">&lt;/inline&gt;</span>
+    <span class="nt">&lt;/p&gt;</span>
+
+    <span class="nt">&lt;p</span> <span class="na">style=</span><span class="s">&quot;text-align:right&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;docDate</span> <span class="na">date=</span><span class="s">&quot;{$work-date}&quot;</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;engrossed-amendment-form/action/action-date&quot;</span><span class="nt">/&gt;</span>
+      <span class="nt">&lt;/docDate&gt;</span>
+    <span class="nt">&lt;/p&gt;</span>
+  <span class="nt">&lt;/coverPage&gt;</span>
+
+  <span class="nt">&lt;preface&gt;</span>
+
+    <span class="nt">&lt;formula</span> <span class="na">name=</span><span class="s">&quot;resolution&quot;</span> <span class="na">currentId=</span><span class="s">&quot;{generate-id(engrossed-amendment-body/section[@section-type=&#39;resolved&#39;])}&quot;</span><span class="nt">&gt;</span>
+
+      <span class="nt">&lt;p&gt;</span>
+        <span class="nt">&lt;i&gt;</span>Resolved, <span class="nt">&lt;/i&gt;</span>
+        <span class="k">&lt;xsl:apply-templates</span> <span class="na">select=</span><span class="s">&quot;engrossed-amendment-body/section[@section-type=&#39;resolved&#39;]/text/node()&quot;</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;/p&gt;</span>
+
+      <span class="nt">&lt;p&gt;&lt;docType&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;engrossed-amendment-form/legis-type&quot;</span><span class="nt">/&gt;&lt;/docType&gt;&lt;/p&gt;</span>
+
+    <span class="nt">&lt;/formula&gt;</span>
+
+  <span class="nt">&lt;/preface&gt;</span>
+  
+  <span class="nt">&lt;amendmentBody</span> <span class="na">class=</span><span class="s">&quot;{@style}&quot;</span><span class="nt">&gt;</span>
+
+    <span class="k">&lt;xsl:apply-templates</span> <span class="na">select=</span><span class="s">&quot;engrossed-amendment-body/amendment&quot;</span> <span class="nt">/&gt;</span>
+
+    <span class="k">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;title-amends&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;amendmentContent&gt;</span>
+        <span class="nt">&lt;p&gt;</span>
+          <span class="k">&lt;xsl:apply-templates</span> <span class="na">select=</span><span class="s">&quot;title-amends/official-title-amendment/node()&quot;</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/p&gt;</span>
+      <span class="nt">&lt;/amendmentContent&gt;</span>
+    <span class="k">&lt;/xsl:if&gt;</span>
+
+  <span class="nt">&lt;/amendmentBody&gt;</span>
+  
+  <span class="nt">&lt;conclusions&gt;</span>
+    <span class="k">&lt;xsl:apply-templates</span> <span class="na">select=</span><span class="s">&quot;attestation&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/conclusions&gt;</span>
+  
+<span class="nt">&lt;/amendment&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;/amendment-doc/engrossed-amendment-body/amendment&quot;</span><span class="nt">&gt;</span>
+
+  <span class="nt">&lt;amendmentContent&gt;</span>
+  
+    <span class="nt">&lt;p&gt;</span>
+      <span class="nt">&lt;span&gt;</span>
+        <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;normalize-space(amendment-instruction/text)&quot;</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;/span&gt;</span>
+    <span class="nt">&lt;/p&gt;</span>
+  
+    <span class="k">&lt;xsl:for-each</span> <span class="na">select=</span><span class="s">&quot;amendment-block&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;p&gt;</span>
+        <span class="k">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;@reported-display-style = &#39;italic&#39;&quot;</span><span class="nt">&gt;</span>
+          <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;style&quot;</span><span class="nt">&gt;</span>
+            <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>font-style:italic<span class="k">&lt;/xsl:text&gt;</span>
+          <span class="k">&lt;/xsl:attribute&gt;</span>
+        <span class="k">&lt;/xsl:if&gt;</span>
+        <span class="nt">&lt;mod</span> <span class="na">currentId=</span><span class="s">&quot;{generate-id()}&quot;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;quotedStructure</span> <span class="na">currentId=</span><span class="s">&quot;{generate-id()}q&quot;</span> <span class="na">startQuote=</span><span class="s">&quot;&quot;</span> <span class="na">endQuote=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
+            <span class="k">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;*[1][self::continuation-text]&quot;</span><span class="nt">&gt;</span>
+              <span class="k">&lt;xsl:element</span> <span class="na">name=</span><span class="s">&quot;{*[1]/@continuation-text-level}&quot;</span><span class="nt">&gt;</span>
+                <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;currentId&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;generate-id(*[1])&quot;</span><span class="nt">&gt;</span><span class="k">&lt;/xsl:value-of&gt;&lt;/xsl:attribute&gt;</span>
+                <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;class&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>continuation<span class="k">&lt;/xsl:text&gt;&lt;/xsl:attribute&gt;</span>
+                <span class="nt">&lt;content</span> <span class="na">currentId=</span><span class="s">&quot;{generate-id(*[1])}-content&quot;</span><span class="nt">&gt;</span>
+                  <span class="nt">&lt;p&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;normalize-space(*[1])&quot;</span> <span class="nt">/&gt;&lt;/p&gt;</span>
+                <span class="nt">&lt;/content&gt;</span>
+              <span class="k">&lt;/xsl:element&gt;</span>
+            <span class="k">&lt;/xsl:if&gt;</span>
+            <span class="k">&lt;xsl:for-each</span> <span class="na">select=</span><span class="s">&quot;appropriations-major&quot;</span><span class="nt">&gt;</span>
+              <span class="nt">&lt;hcontainer</span> <span class="na">name=</span><span class="s">&quot;appropriations&quot;</span> <span class="na">currentId=</span><span class="s">&quot;{@id}&quot;</span> <span class="na">class=</span><span class="s">&quot;major&quot;</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;heading</span> <span class="na">currentId=</span><span class="s">&quot;{@id}-heading&quot;</span><span class="nt">&gt;</span>
+                  <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;normalize-space(header)&quot;</span> <span class="nt">/&gt;</span>
+                <span class="nt">&lt;/heading&gt;</span>
+                <span class="k">&lt;xsl:for-each</span> <span class="na">select=</span><span class="s">&quot;title&quot;</span><span class="nt">&gt;</span>
+                  <span class="nt">&lt;title</span> <span class="na">currentId=</span><span class="s">&quot;{@id}&quot;</span><span class="nt">&gt;</span>
+                    <span class="nt">&lt;num&gt;</span><span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>Title <span class="k">&lt;/xsl:text&gt;&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;enum&quot;</span> <span class="nt">/&gt;&lt;/num&gt;</span>
+                    <span class="k">&lt;xsl:apply-templates</span> <span class="na">select=</span><span class="s">&quot;appropriations-major|appropriations-intermediate|appropriations-small&quot;</span> <span class="nt">/&gt;</span>
+                  <span class="nt">&lt;/title&gt;</span>
+                <span class="k">&lt;/xsl:for-each&gt;</span>
+              <span class="nt">&lt;/hcontainer&gt;</span>
+            <span class="k">&lt;/xsl:for-each&gt;</span>
+          <span class="nt">&lt;/quotedStructure&gt;</span>
+        <span class="nt">&lt;/mod&gt;</span>
+      <span class="nt">&lt;/p&gt;</span>
+    <span class="k">&lt;/xsl:for-each&gt;</span>
+  <span class="nt">&lt;/amendmentContent&gt;</span> 
+
+<span class="k">&lt;/xsl:template&gt;</span>
+
+
+<span class="c">&lt;!-- Bill reported in the House--&gt;</span>
+
+<span class="k">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;/bill[@bill-stage = &#39;Reported-in-House&#39;]&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;bill</span> <span class="na">name=</span><span class="s">&quot;reported&quot;</span><span class="nt">&gt;</span>
+  
+    <span class="k">&lt;xsl:choose</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:when</span> <span class="na">test=</span><span class="s">&quot;count(legis-body) = 1&quot;</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;contains&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>originalVersion<span class="k">&lt;/xsl:text&gt;&lt;/xsl:attribute&gt;</span>
+      <span class="k">&lt;/xsl:when&gt;</span>
+      <span class="k">&lt;xsl:when</span> <span class="na">test=</span><span class="s">&quot;count(legis-body) &gt; 1&quot;</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;contains&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>multipleVersions<span class="k">&lt;/xsl:text&gt;&lt;/xsl:attribute&gt;</span>
+      <span class="k">&lt;/xsl:when&gt;</span>
+      <span class="k">&lt;xsl:otherwise</span> <span class="nt">/&gt;</span>
+    <span class="k">&lt;/xsl:choose&gt;</span> 
+  
+    <span class="k">&lt;xsl:variable</span> <span class="na">name=</span><span class="s">&quot;work-date&quot;</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;hyphenate-date&quot;</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;compact&quot;</span> <span class="na">select=</span><span class="s">&quot;form/action[action-date][1]/action-date/@date&quot;</span> <span class="nt">/&gt;</span>
+      <span class="k">&lt;/xsl:call-template&gt;</span>
+    <span class="k">&lt;/xsl:variable&gt;</span>
+    <span class="k">&lt;xsl:variable</span> <span class="na">name=</span><span class="s">&quot;expr-date&quot;</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;hyphenate-date&quot;</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;compact&quot;</span> <span class="na">select=</span><span class="s">&quot;form/action[action-date][last()]/action-date/@date&quot;</span> <span class="nt">/&gt;</span>
+      <span class="k">&lt;/xsl:call-template&gt;</span>
+    <span class="k">&lt;/xsl:variable&gt;</span>
+    <span class="k">&lt;xsl:variable</span> <span class="na">name=</span><span class="s">&quot;num&quot;</span><span class="nt">&gt;</span>
+      <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;substring-after(form/legis-num, &#39;H. R. &#39;)&quot;</span> <span class="nt">/&gt;</span>
+    <span class="k">&lt;/xsl:variable&gt;</span>
+  
+    <span class="nt">&lt;meta&gt;</span>
+    
+      <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;meta-identify&quot;</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;work-date&quot;</span> <span class="na">select=</span><span class="s">&quot;$work-date&quot;</span> <span class="nt">/&gt;</span>
+        <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;num&quot;</span> <span class="na">select=</span><span class="s">&quot;$num&quot;</span> <span class="nt">/&gt;</span>
+        <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;expr-date&quot;</span> <span class="na">select=</span><span class="s">&quot;$expr-date&quot;</span> <span class="nt">/&gt;</span>
+        <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;expr-date-type&quot;</span> <span class="na">select=</span><span class="s">&quot;&#39;amendment&#39;&quot;</span> <span class="nt">/&gt;</span>
+        <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;expr-author-id&quot;</span> <span class="na">select=</span><span class="s">&quot;form//committee-name[last()]/@committee-id&quot;</span> <span class="nt">/&gt;</span>
+      <span class="k">&lt;/xsl:call-template&gt;</span>
+  
+      <span class="nt">&lt;publication</span> <span class="na">date=</span><span class="s">&quot;{$expr-date}&quot;</span> <span class="na">name=</span><span class="s">&quot;H. R.&quot;</span> <span class="na">number=</span><span class="s">&quot;{$num}&quot;</span> <span class="na">showAs=</span><span class="s">&quot;{form/legis-num}&quot;</span> <span class="nt">/&gt;</span>
+  
+      <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;meta-lifecycle&quot;</span> <span class="nt">/&gt;</span>
+      
+      <span class="nt">&lt;temporalData</span> <span class="na">source=</span><span class="s">&quot;#mangiafico&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;temporalGroup</span> <span class="na">currentId=</span><span class="s">&quot;time1&quot;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;timeInterval</span> <span class="na">refersTo=</span><span class="s">&quot;#originalLanguage&quot;</span> <span class="na">start=</span><span class="s">&quot;#{concat(&#39;ref&#39;,generate-id(form/action[action-date][1]))}&quot;</span> <span class="na">end=</span><span class="s">&quot;#{concat(&#39;ref&#39;,generate-id(form/action[action-date][last()]))}&quot;</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;/temporalGroup&gt;</span>
+        <span class="nt">&lt;temporalGroup</span> <span class="na">currentId=</span><span class="s">&quot;time2&quot;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;timeInterval</span> <span class="na">refersTo=</span><span class="s">&quot;#currentLanguage&quot;</span> <span class="na">start=</span><span class="s">&quot;#{concat(&#39;ref&#39;,generate-id(form/action[action-date][last()]))}&quot;</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;/temporalGroup&gt;</span>
+      <span class="nt">&lt;/temporalData&gt;</span>
+  
+      <span class="nt">&lt;references</span> <span class="na">source=</span><span class="s">&quot;#mangiafico&quot;</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;meta-references&quot;</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;/references&gt;</span>
+  
+      <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;meta-proprietary&quot;</span> <span class="nt">/&gt;</span>
+  
+    <span class="nt">&lt;/meta&gt;</span>
+    
+    <span class="nt">&lt;coverPage&gt;</span>
+      <span class="nt">&lt;p</span> <span class="na">style=</span><span class="s">&quot;display:none&quot;</span><span class="nt">&gt;&lt;docStage&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;@bill-stage&quot;</span> <span class="nt">/&gt;&lt;/docStage&gt;&lt;/p&gt;</span>
+      <span class="nt">&lt;p</span> <span class="na">class=</span><span class="s">&quot;calendar&quot;</span><span class="nt">&gt;&lt;inline</span> <span class="na">name=</span><span class="s">&quot;calendar&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;form/calendar&quot;</span><span class="nt">/&gt;&lt;/inline&gt;&lt;/p&gt;</span>
+  
+      <span class="nt">&lt;p</span> <span class="na">class=</span><span class="s">&quot;congress&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;legislature&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;form/congress&quot;</span> <span class="nt">/&gt;&lt;/legislature&gt;</span>
+        <span class="nt">&lt;br</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;session&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;form/session&quot;</span> <span class="nt">/&gt;&lt;/session&gt;</span>
+      <span class="nt">&lt;/p&gt;</span>
+  
+      <span class="nt">&lt;p&gt;&lt;docNumber&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;form/legis-num&quot;</span><span class="nt">/&gt;&lt;/docNumber&gt;&lt;/p&gt;</span>
+  
+      <span class="nt">&lt;p&gt;&lt;relatedDocument</span> <span class="na">href=</span><span class="s">&quot;/us/report/house/113-30/main&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;form/associated-doc&quot;</span><span class="nt">/&gt;&lt;/relatedDocument&gt;&lt;/p&gt;</span>
+      
+      <span class="nt">&lt;p</span> <span class="na">class=</span><span class="s">&quot;title&quot;</span><span class="nt">&gt;&lt;docTitle&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;/bill/form/official-title&quot;</span><span class="nt">/&gt;&lt;/docTitle&gt;&lt;/p&gt;</span>
+      
+      <span class="nt">&lt;block</span> <span class="na">name=</span><span class="s">&quot;Horizontal Rule&quot;</span> <span class="nt">/&gt;</span>
+          
+      <span class="nt">&lt;p&gt;&lt;inline</span> <span class="na">name=</span><span class="s">&quot;chamber&quot;</span><span class="nt">&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;form/current-chamber&quot;</span><span class="nt">/&gt;&lt;/inline&gt;&lt;/p&gt;</span>
+    
+      <span class="k">&lt;xsl:for-each</span> <span class="na">select=</span><span class="s">&quot;form/action[action-date]&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;container</span> <span class="na">name=</span><span class="s">&quot;action&quot;</span> <span class="na">currentId=</span><span class="s">&quot;{generate-id()}&quot;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;p&gt;</span>
+            <span class="nt">&lt;date&gt;</span>
+              <span class="k">&lt;xsl:attribute</span> <span class="na">name=</span><span class="s">&quot;date&quot;</span><span class="nt">&gt;</span>
+                <span class="k">&lt;xsl:call-template</span> <span class="na">name=</span><span class="s">&quot;hyphenate-date&quot;</span><span class="nt">&gt;</span>
+                  <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;compact&quot;</span> <span class="na">select=</span><span class="s">&quot;action-date/@date&quot;</span> <span class="nt">/&gt;</span>
+                <span class="k">&lt;/xsl:call-template&gt;</span>
+              <span class="k">&lt;/xsl:attribute&gt;</span>
+              <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;action-date&quot;</span><span class="nt">/&gt;</span>
+            <span class="nt">&lt;/date&gt;</span>
+          <span class="nt">&lt;/p&gt;</span>
+          <span class="nt">&lt;p</span> <span class="na">class=</span><span class="s">&quot;description&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;event</span> <span class="na">refersTo=</span><span class="s">&quot;{concat(&#39;ref&#39;,generate-id())}&quot;</span> <span class="na">currentId=</span><span class="s">&quot;{generate-id(action-desc)}&quot;</span><span class="nt">&gt;</span>
+              <span class="k">&lt;xsl:apply-templates</span> <span class="na">select=</span><span class="s">&quot;action-desc/node()&quot;</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;/event&gt;</span>
+          <span class="nt">&lt;/p&gt;</span>
+          <span class="k">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;action-instruction&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;p</span> <span class="na">class=</span><span class="s">&quot;instruction&quot;</span><span class="nt">&gt;</span>
+              <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>[<span class="k">&lt;/xsl:text&gt;</span>
+              <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;action-instruction&quot;</span><span class="nt">/&gt;</span>
+              <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>]<span class="k">&lt;/xsl:text&gt;</span>
+            <span class="nt">&lt;/p&gt;</span>
+          <span class="k">&lt;/xsl:if&gt;</span>
+        <span class="nt">&lt;/container&gt;</span>
+      <span class="k">&lt;/xsl:for-each&gt;</span>
+      
+      <span class="nt">&lt;block</span> <span class="na">name=</span><span class="s">&quot;Horizontal Rule&quot;</span> <span class="nt">/&gt;</span>
+    
+    <span class="nt">&lt;/coverPage&gt;</span>
+  
+    <span class="nt">&lt;preface&gt;</span>
+  
+      <span class="nt">&lt;p&gt;&lt;docType&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;/bill/form/legis-type&quot;</span><span class="nt">/&gt;&lt;/docType&gt;&lt;/p&gt;</span>
+      
+      <span class="nt">&lt;p</span> <span class="na">class=</span><span class="s">&quot;title&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;docTitle&gt;</span><span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;/bill/form/official-title&quot;</span><span class="nt">/&gt;&lt;/docTitle&gt;</span>
+        <span class="nt">&lt;eop</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;/p&gt;</span>
+    
+      <span class="nt">&lt;formula</span> <span class="na">name=</span><span class="s">&quot;enacting clause&quot;</span> <span class="na">currentId=</span><span class="s">&quot;{generate-id(legis-body)}&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;p&gt;</span>
+          <span class="nt">&lt;i&gt;</span><span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>Be it enacted by the Senate and House of Representatives of the United States of America in Congress assembled,<span class="k">&lt;/xsl:text&gt;</span><span class="nt">&lt;/i&gt;</span>
+        <span class="nt">&lt;/p&gt;</span>
+      <span class="nt">&lt;/formula&gt;</span>
+  
+    <span class="nt">&lt;/preface&gt;</span>    
+  
+    <span class="nt">&lt;body&gt;</span>
+      <span class="k">&lt;xsl:choose</span><span class="nt">&gt;</span>
+        <span class="k">&lt;xsl:when</span> <span class="na">test=</span><span class="s">&quot;count(legis-body) = 1&quot;</span><span class="nt">&gt;</span>
+          <span class="k">&lt;xsl:apply-templates</span> <span class="na">select=</span><span class="s">&quot;legis-body/section&quot;</span> <span class="nt">/&gt;</span>
+        <span class="k">&lt;/xsl:when&gt;</span>
+        <span class="k">&lt;xsl:otherwise</span><span class="nt">&gt;</span>
+          <span class="k">&lt;xsl:for-each</span> <span class="na">select=</span><span class="s">&quot;legis-body[1]/section&quot;</span><span class="nt">&gt;</span>
+            <span class="k">&lt;xsl:apply-templates</span> <span class="na">select=</span><span class="s">&quot;.&quot;</span><span class="nt">&gt;</span>
+              <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;period&quot;</span> <span class="na">select=</span><span class="s">&quot;&#39;#time1&#39;&quot;</span> <span class="nt">/&gt;</span>
+              <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;originalId&quot;</span><span class="nt">&gt;</span>
+                <span class="k">&lt;xsl:text</span><span class="nt">&gt;</span>sec<span class="k">&lt;/xsl:text&gt;</span>
+                <span class="k">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;translate(enum, &#39;. ()&#39;, &#39;&#39;)&quot;</span> <span class="nt">/&gt;</span>
+              <span class="k">&lt;/xsl:with-param&gt;</span>
+              <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;style&quot;</span> <span class="na">select=</span><span class="s">&quot;&#39;text-decoration:line-through&#39;&quot;</span> <span class="nt">/&gt;</span>
+            <span class="k">&lt;/xsl:apply-templates&gt;</span>
+          <span class="k">&lt;/xsl:for-each&gt;</span>
+          <span class="k">&lt;xsl:for-each</span> <span class="na">select=</span><span class="s">&quot;legis-body[2]/section&quot;</span><span class="nt">&gt;</span>
+            <span class="k">&lt;xsl:variable</span> <span class="na">name=</span><span class="s">&quot;pos&quot;</span> <span class="na">select=</span><span class="s">&quot;position()&quot;</span> <span class="nt">/&gt;</span>
+            <span class="k">&lt;xsl:apply-templates</span> <span class="na">select=</span><span class="s">&quot;.&quot;</span><span class="nt">&gt;</span>
+              <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;period&quot;</span> <span class="na">select=</span><span class="s">&quot;&#39;#time2&#39;&quot;</span> <span class="nt">/&gt;</span>
+              <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;alternativeTo&quot;</span> <span class="na">select=</span><span class="s">&quot;parent::*/preceding-sibling::*[1]/section[$pos]/@id&quot;</span> <span class="nt">/&gt;</span>
+              <span class="k">&lt;xsl:with-param</span> <span class="na">name=</span><span class="s">&quot;style&quot;</span> <span class="na">select=</span><span class="s">&quot;&#39;font-style:italic&#39;&quot;</span> <span class="nt">/&gt;</span>
+            <span class="k">&lt;/xsl:apply-templates&gt;</span>
+          <span class="k">&lt;/xsl:for-each&gt;</span>
+        <span class="k">&lt;/xsl:otherwise&gt;</span>
+      <span class="k">&lt;/xsl:choose&gt;</span>
+    <span class="nt">&lt;/body&gt;</span>
+  
+  <span class="nt">&lt;/bill&gt;</span>
+<span class="k">&lt;/xsl:template&gt;</span>
+
+<span class="k">&lt;/xsl:stylesheet&gt;</span>
+</pre>
+
+</body>
+
+</html>
